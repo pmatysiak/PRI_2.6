@@ -35,8 +35,6 @@ void wyswietlSciage();
 void rysujPodgladOkretow();
 void odswiezPodgladOkretow();
 void czytajKlawisz();
-void czyscPlansze();
-void inicjalizujPlansze();
 
 struct PolePlanszy {
 	enum stan {
@@ -74,8 +72,17 @@ int main()
 	
 	//inicjalizacja planszy gracza i AI
 
-	inicjalizujPlansze();
 	
+	
+
+	int iter_x, iter_y;
+	for ( iter_y = 0; iter_y < 10; iter_y++ ) {
+		for ( iter_x = 0; iter_x < 10; iter_x++ ) {
+			planszaGracza[iter_x][iter_y].obiekt = woda;
+			planszaAI[iter_x][iter_y].obiekt = woda;
+		}
+	}
+
 	//inicjalizacja stanu okretow gracza i komputera
 
 	gracz.okret_4 = 4;
@@ -90,7 +97,6 @@ int main()
 
 
 	initscr();
-
 	start_color();
 
 	init_pair(WODA, COLOR_CYAN, COLOR_BLUE);
@@ -169,16 +175,9 @@ void rysujPlansze() {
 	for (plansza = 1; plansza <= 2; plansza++) {
 		for (y = TARGET_Y_MIN; y <= TARGET_Y_MAX ; y++) {
 			for (x = (plansza == 1 ? TARGET_X_MIN : STATUS_X_MIN); x <= (plansza == 1 ? TARGET_X_MAX : STATUS_X_MAX); x = x + 2 ) {
-				
-				if (plansza == 1 ) odswiezPole(x, y);
-				else odswiezPole(x-26, y);
-
-				/*
 				attron(COLOR_PAIR(WODA));
 				mvprintw(y, x, "%c", pole);
 				attroff(COLOR_PAIR(WODA));
-
-				*/
 			}
 		}
 	}
@@ -330,19 +329,10 @@ void zmienStan(int x_cur, int y_cur) {
 
 void odswiezPole(int x_cur, int y_cur) {
 	int x, y;
-	int stan;
-	
+	x = x_cur/2 - 7;
 	y = y_cur - 6;
-	if (x_cur < 36) {
-		x = x_cur/2 - 7;
-		stan = planszaGracza[x -1][y - 1].obiekt;
-	}
-	else  if (x_cur > 42 ) {
-		x = (x_cur-1)/2 - 20;
-		stan = planszaAI[x -1][y - 1].obiekt;
-	}
 
-
+	int stan = planszaGracza[x -1][y - 1].obiekt;
 	attron(COLOR_PAIR(stan));
 	switch (stan) {
 		case WODA:
@@ -400,17 +390,11 @@ void ruchKursora(int key) {
 			}
 			break;
 	}
-
-#if DEBUG == 1	
-
 	mvprintw(0,0, "Polozenie kursora: x = %c, y = %d ", (x_cur/2 - 7)+64, y_cur-6);
 	mvprintw(1,15, "tab x = %d, y = %d", (x_cur/2 - 7)-1, y_cur-7);
-	mvprintw(2,15, "cur x = %d, y = %d", x_cur, y_cur);
+
 
 	mvprintw (0, WIDTH-40, "status: %d", planszaGracza[x_cur/2 - 8][y_cur-7].obiekt);
-
-
-#endif
 }
 
 void wyswietlSciage() {
@@ -453,10 +437,10 @@ void wyswietlSciage() {
 	mvprintw(HEIGHT-3, 1 + 3*szerokosc_pojedynczej_sciagi, " statek    ");
 	mvprintw(HEIGHT-3, 1 + 4*szerokosc_pojedynczej_sciagi, " trafiony  ");
 	mvprintw(HEIGHT-3, 1 + 5*szerokosc_pojedynczej_sciagi, " zatopiony ");
-	mvprintw(HEIGHT-3, 1 + 6*szerokosc_pojedynczej_sciagi, " pudlo ");
+	mvprintw(HEIGHT-3, 1 + 6*szerokosc_pojedynczej_sciagi, " pudlo     ");
 
 	mvprintw(HEIGHT-2, 0, "Uzyj strzalek do poruszania kursorem. Spacja zaznacza kratke. Q konczy program. ");
-	mvprintw(HEIGHT-1, 0, "F5 resetuje plansze. 1, 2, 3, 4, 5 zaznaczaja testowo.                          ");
+	mvprintw(HEIGHT-1, 0, "R resetuje plansze. 1, 2, 3, 4, 5 zaznaczaja testowo.                           ");
 	
 	attroff(A_REVERSE);
 }
@@ -718,8 +702,7 @@ void czytajKlawisz() {
 				odswiezPole(x_cur, y_cur);
 				//odswiezPlansze();
 				break;			
-			case KEY_F(5):								//reset planszy
-				czyscPlansze();
+			case 'r':								//reset planszy
 				rysujPlansze();
 				break;
 		}
@@ -729,19 +712,4 @@ void czytajKlawisz() {
 		refresh();
 	}
 
-}
-
-void czyscPlansze() {
-
-
-}
-
-void inicjalizujPlansze() {
-	int iter_x, iter_y;
-	for ( iter_y = 0; iter_y < 10; iter_y++ ) {
-		for ( iter_x = 0; iter_x < 10; iter_x++ ) {
-			planszaGracza[iter_x][iter_y].obiekt = woda;
-			planszaAI[iter_x][iter_y].obiekt = woda;
-		}
-	}
-}
+};

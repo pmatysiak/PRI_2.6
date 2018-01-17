@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
 
 	initscr();
 	noecho();
-	curs_set(TRUE);
+	curs_set(FALSE);
 
 
 	getmaxyx(stdscr, max_y, max_x);
@@ -50,12 +50,26 @@ void splashscreen(int max_y, int max_x) {
 		mvprintw(yTitle+5, (max_x-73)/2, "888     888 888  Y88b   888 T88b   888            888         888        ");
 		mvprintw(yTitle+6, (max_x-73)/2, "Y88b. .d88P 888   Y88b  888  T88b  888            888         888        ");
 		mvprintw(yTitle+7, (max_x-73)/2, " \"Y88888P\"  888    Y88b 888   T88b 8888888888     888         888        ");
-		mvprintw(yTitle+8, (max_x-73)/2, "                                           bo                            ");
+		mvprintw(yTitle+8, (max_x-73)/2, "                                           8o                            ");
 
 		if ((i/2)%4 != 0) {
-			mvprintw(yTitle+12, (max_x-18)/2, "+================+");
-			mvprintw(yTitle+13, (max_x-18)/2, "| NACISNIJ ENTER |");
-			mvprintw(yTitle+14, (max_x-18)/2, "+================+");
+			int fori;
+			mvaddch(yTitle+12, (max_x-18)/2, ACS_ULCORNER);
+			for (fori = 0; fori < 16; ++fori) {
+				addch(ACS_HLINE);
+			}
+			addch(ACS_URCORNER);
+
+			mvaddch(yTitle+13, (max_x-18)/2, ACS_VLINE);
+			printw(" NACISNIJ ENTER ");
+			addch(ACS_VLINE);
+
+			mvaddch(yTitle+14, (max_x-18)/2, ACS_LLCORNER);
+			for (fori = 0; fori < 16; ++fori) {
+				addch(ACS_HLINE);
+			}
+			addch(ACS_LRCORNER);
+			//mvprintw(yTitle+14, (max_x-18)/2, "+================+");
 		}
 		else {
 			mvprintw(yTitle+12, (max_x-18)/2, "                  ");
