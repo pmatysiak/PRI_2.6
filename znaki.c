@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <ncurses.h>
 
 #define DEBUG 1
@@ -28,6 +29,7 @@
 
 void odswiezPlansze();
 void rysujPlansze();
+void zmienStanDebug();
 void zmienStan();
 void odswiezPole();
 void ruchKursora();
@@ -35,8 +37,10 @@ void wyswietlSciage();
 void rysujPodgladOkretow();
 void odswiezPodgladOkretow();
 void czytajKlawisz();
-void czyscPlansze();
 void inicjalizujPlansze();
+void ustawOkretyGracza();
+void ustawOkret();
+int sprawdzMiejsce();
 
 struct PolePlanszy {
 	enum stan {
@@ -134,6 +138,8 @@ int main()
 	move(y_cur,x_cur);
 	refresh();
 	odswiezPlansze();
+
+	ustawOkretyGracza();
 
 	rysujPodgladOkretow();
 
@@ -294,12 +300,12 @@ void odswiezPlansze() {
 		}
 }
 
-void zmienStan(int x_cur, int y_cur) {
+void zmienStanDebug(int x_curs, int y_curs) {
 	//planszaGracza[x][y].obiekt = statek;
 	//planszaGracza[x][y].obiekt = ((planszaGracza[x][y].obiekt) % 6)+1;
 	int x, y;
-	x = x_cur/2 - 7;
-	y = y_cur - 6;
+	x = x_curs/2 - 7;
+	y = y_curs - 6;
 
 	mvprintw (0, WIDTH-21, "zmiana x = %c, y = %d ", x+64, y);
 	mvprintw (1, WIDTH-18, "tab x = %d, y = %d ", x-1, y-1);
@@ -328,28 +334,75 @@ void zmienStan(int x_cur, int y_cur) {
 
 }
 
-void odswiezPole(int x_cur, int y_cur) {
+void zmienStan(int x_curs, int y_curs, int stan) {
+	//planszaGracza[x][y].obiekt = statek;
+	//planszaGracza[x][y].obiekt = ((planszaGracza[x][y].obiekt) % 6)+1;
+	int x, y;
+	x = x_curs/2 - 7;
+	y = y_curs - 6;
+	if (x > 0 && x <= 10 && y > 0 && y <= 10) {
+		mvprintw (0, WIDTH-21, "zmiana x = %c, y = %d ", x+64, y);
+		mvprintw (1, WIDTH-18, "tab x = %d, y = %d ", x-1, y-1);
+
+		switch ( stan ) {
+			case WODA:
+				planszaGracza[x-1][y-1].obiekt = woda;
+				break;
+			case STATEK_USTAWIANY:
+				planszaGracza[x-1][y-1].obiekt = statek_ustawiany;
+				break;
+			case STATEK:
+				planszaGracza[x-1][y-1].obiekt = statek;
+				planszaGracza[x-1][y-1].czyMoznaUstawicStatek = niedozwolony;
+				break;
+			case TRAFIONY:
+				planszaGracza[x-1][y-1].obiekt = trafiony;
+				break;
+			case ZATOPIONY:
+				planszaGracza[x-1][y-1].obiekt = zatopiony;
+				break;
+			case PUDLO:
+				planszaGracza[x-1][y-1].obiekt = pudlo;
+				break;
+			case WODA_NIEDOZWOLONA:
+				planszaGracza[x-1][y-1].obiekt = woda;
+				planszaGracza[x-1][y-1].czyMoznaUstawicStatek = niedozwolony;
+				break;
+		}
+		mvprintw (0, WIDTH-40, "status: %d", planszaGracza[x-1][y-1].obiekt);
+		mvprintw (1, WIDTH-40, "dozwol: %d", planszaGracza[x-1][y-1].czyMoznaUstawicStatek);
+	}
+}
+
+void odswiezPole(int x_curs, int y_curs) {
 	int x, y;
 	int stan;
+	int dozw;
 	
-	y = y_cur - 6;
-	if (x_cur < 36) {
-		x = x_cur/2 - 7;
+	y = y_curs - 6;
+	if (x_curs < 36) {
+		x = x_curs/2 - 7;
 		stan = planszaGracza[x -1][y - 1].obiekt;
+		dozw = planszaGracza[x -1][y - 1].czyMoznaUstawicStatek;
+
 	}
-	else  if (x_cur > 42 ) {
-		x = (x_cur-1)/2 - 20;
+	else  if (x_curs > 42 ) {
+		x = (x_curs-1)/2 - 20;
 		stan = planszaAI[x -1][y - 1].obiekt;
+		dozw = planszaAI[x -1][y - 1].czyMoznaUstawicStatek;
 	}
 
 
 	attron(COLOR_PAIR(stan));
 	switch (stan) {
 		case WODA:
-			mvprintw(y+6,(x+7)*2+1,"~");						//zaznaczanie statek	
-			break;
-		case WODA_NIEDOZWOLONA:
-			mvprintw(y+6,(x+7)*2+1,"-");						//zaznaczanie statek	
+			if (dozw == dozwolony) {
+				mvprintw(y+6,(x+7)*2+1,"~");						//zaznaczanie statek	
+			} else {
+				attron(COLOR_PAIR(WODA_NIEDOZWOLONA));
+				mvprintw(y+6,(x+7)*2+1,"-");
+				attroff(COLOR_PAIR(WODA_NIEDOZWOLONA));
+			}
 			break;
 		case STATEK_USTAWIANY:
 			mvprintw(y+6,(x+7)*2+1,"U");						//zaznaczanie statek
@@ -408,6 +461,9 @@ void ruchKursora(int key) {
 	mvprintw(2,15, "cur x = %d, y = %d", x_cur, y_cur);
 
 	mvprintw (0, WIDTH-40, "status: %d", planszaGracza[x_cur/2 - 8][y_cur-7].obiekt);
+	mvprintw (1, WIDTH-40, "dozwol: %d", planszaGracza[x_cur/2 - 8][y_cur-7].czyMoznaUstawicStatek);
+
+	move(y_cur, x_cur);
 
 
 #endif
@@ -713,13 +769,13 @@ void czytajKlawisz() {
 					
 			case ' ':
 				//planszaGracza[x_cur][y_cur].obiekt = statek;
-				zmienStan(x_cur, y_cur);			//zmiana stanu
+				zmienStanDebug(x_cur, y_cur);			//zmiana stanu
 				//printw("%d",planszaGracza[x_cur][y_cur].obiekt );
 				odswiezPole(x_cur, y_cur);
 				//odswiezPlansze();
 				break;			
 			case KEY_F(5):								//reset planszy
-				czyscPlansze();
+				inicjalizujPlansze();
 				rysujPlansze();
 				break;
 		}
@@ -731,17 +787,412 @@ void czytajKlawisz() {
 
 }
 
-void czyscPlansze() {
-
-
-}
-
 void inicjalizujPlansze() {
 	int iter_x, iter_y;
 	for ( iter_y = 0; iter_y < 10; iter_y++ ) {
 		for ( iter_x = 0; iter_x < 10; iter_x++ ) {
 			planszaGracza[iter_x][iter_y].obiekt = woda;
+			planszaGracza[iter_x][iter_y].czyMoznaUstawicStatek = dozwolony;
 			planszaAI[iter_x][iter_y].obiekt = woda;
+			planszaAI[iter_x][iter_y].czyMoznaUstawicStatek = dozwolony;
 		}
+	}
+}
+
+void ustawOkretyGracza() {
+	int i;
+	y_cur = TARGET_Y_MIN;
+	x_cur = TARGET_X_MIN;
+	ustawOkret(4);
+	for (i = 0; i < 2; ++i) {
+		ustawOkret(3);
+	}
+	for (i = 0; i < 3; ++i) {
+		ustawOkret(2);
+	}
+	for (i = 0; i < 4; ++i) {
+		ustawOkret(1);
+	}
+}
+
+void ustawOkret(int wielkoscOkretu) {
+	
+	move(y_cur, x_cur);
+	int klawisz;
+	int i;
+	int obrot;
+	int hasToBreak;
+	hasToBreak = 0;
+	switch (wielkoscOkretu) {
+		case 1:
+			while ( (klawisz = getch() ) != 'q') {
+				odswiezPlansze();
+				if ( klawisz == KEY_UP || klawisz == KEY_DOWN || klawisz == KEY_LEFT || klawisz == KEY_RIGHT ) {
+					ruchKursora(klawisz);
+				}
+				attron(COLOR_PAIR(STATEK_USTAWIANY));
+				mvprintw(y_cur,x_cur,"U");
+				attroff(COLOR_PAIR(STATEK_USTAWIANY));
+				move(y_cur, x_cur);
+				if ( klawisz == ' ' && sprawdzMiejsce(x_cur, y_cur) == 1) {
+					int xdelta;
+					int ydelta;
+					for (xdelta = (-2); xdelta <= 2; xdelta = xdelta + 2) {
+						for (ydelta = (-1); ydelta <=1; ++ydelta) {
+							zmienStan((x_cur + xdelta), (y_cur + ydelta), WODA_NIEDOZWOLONA);
+						}
+					}
+					move(y_cur, x_cur);
+					zmienStan(x_cur, y_cur, STATEK);
+					move(y_cur, x_cur);
+					odswiezPlansze();
+					break;
+				}
+			}
+			break;
+		case 2:
+			obrot = 0;
+			while ( (klawisz = getch() ) != 'q') {
+				odswiezPlansze();
+				move(y_cur, x_cur);
+
+
+
+				switch (klawisz) {
+					case 'r':
+						if (x_cur == 35) {
+							x_cur = x_cur - 2;
+						}
+						if (y_cur == 16) {
+							--y_cur;
+						}
+						obrot = (obrot + 1)%2;
+						if (obrot == 0) {
+							attron(COLOR_PAIR(STATEK_USTAWIANY));
+							mvprintw(y_cur,x_cur,"U");
+							mvprintw(y_cur,x_cur+2,"U");
+							attroff(COLOR_PAIR(STATEK_USTAWIANY));
+							move(y_cur, x_cur);
+						} else {
+							attron(COLOR_PAIR(STATEK_USTAWIANY));
+							mvprintw(y_cur,x_cur,"U");
+							mvprintw(y_cur+1,x_cur,"U");
+							attroff(COLOR_PAIR(STATEK_USTAWIANY));
+							move(y_cur, x_cur);
+						}
+						break;
+					default:
+						if (obrot == 0) {
+							if ( klawisz == KEY_UP || klawisz == KEY_DOWN || klawisz == KEY_LEFT || klawisz == KEY_RIGHT ) {
+								if ( (x_cur == 33 && klawisz == KEY_RIGHT ) || (x_cur == 17 && klawisz == KEY_LEFT) ) {
+									x_cur = 35;
+								}
+								ruchKursora(klawisz);
+							}
+							attron(COLOR_PAIR(STATEK_USTAWIANY));
+							mvprintw(y_cur,x_cur,"U");
+							mvprintw(y_cur,x_cur+2,"U");
+							attroff(COLOR_PAIR(STATEK_USTAWIANY));
+							move(y_cur, x_cur);
+							if ( klawisz == ' ' && sprawdzMiejsce(x_cur, y_cur) == 1 && sprawdzMiejsce(x_cur+2, y_cur) == 1) {
+								int xdelta;
+								int ydelta;
+								for (xdelta = (-2); xdelta <= 4; xdelta = xdelta + 2) {
+									for (ydelta = (-1); ydelta <=1; ++ydelta) {
+										zmienStan((x_cur + xdelta), (y_cur + ydelta), WODA_NIEDOZWOLONA);
+									}
+								}
+								move(y_cur, x_cur);
+								zmienStan(x_cur, y_cur, STATEK);
+								zmienStan(x_cur + 2, y_cur, STATEK);
+								odswiezPlansze();
+								move(y_cur, x_cur);
+								hasToBreak = 1;
+								break;
+							}
+						} else {
+							if ( klawisz == KEY_UP || klawisz == KEY_DOWN || klawisz == KEY_LEFT || klawisz == KEY_RIGHT ) {
+								if ( (y_cur == 15 && klawisz == KEY_DOWN ) || (y_cur == 7 && klawisz == KEY_UP) ) {
+									y_cur = 16;
+								}
+								ruchKursora(klawisz);
+							}
+							attron(COLOR_PAIR(STATEK_USTAWIANY));
+							mvprintw(y_cur,x_cur,"U");
+							mvprintw(y_cur+1,x_cur,"U");
+							attroff(COLOR_PAIR(STATEK_USTAWIANY));
+							move(y_cur, x_cur);
+							if ( klawisz == ' ' && sprawdzMiejsce(x_cur, y_cur) == 1 && sprawdzMiejsce(x_cur, y_cur+1) == 1) {
+								int xdelta;
+								int ydelta;
+								for (xdelta = (-2); xdelta <= 2; xdelta = xdelta + 2) {
+									for (ydelta = (-1); ydelta <=2; ++ydelta) {
+										zmienStan((x_cur + xdelta), (y_cur + ydelta), WODA_NIEDOZWOLONA);
+									}
+								}
+								move(y_cur, x_cur);
+								zmienStan(x_cur, y_cur, STATEK);
+								zmienStan(x_cur, y_cur + 1, STATEK);
+								odswiezPlansze();
+								move(y_cur, x_cur);
+								hasToBreak = 1;
+								break;
+							}
+						}
+				}
+				if (hasToBreak == 1) {
+					break;
+				}
+
+
+			}
+			break;
+
+		case 3:
+			obrot = 0;
+			while ( (klawisz = getch() ) != 'q') {
+				odswiezPlansze();
+				move(y_cur, x_cur);
+
+
+
+				switch (klawisz) {
+					case 'r':
+						if (x_cur == 33 || x_cur == 35) {
+							x_cur = 31;
+						}
+						if (y_cur == 15 || y_cur == 16) {
+							y_cur = 14;
+						}
+						obrot = (obrot + 1)%2;
+						if (obrot == 0) {
+							attron(COLOR_PAIR(STATEK_USTAWIANY));
+							mvprintw(y_cur,x_cur,"U");
+							mvprintw(y_cur,x_cur+2,"U");
+							mvprintw(y_cur,x_cur+4,"U");
+							attroff(COLOR_PAIR(STATEK_USTAWIANY));
+							move(y_cur, x_cur);
+						} else {
+							attron(COLOR_PAIR(STATEK_USTAWIANY));
+							mvprintw(y_cur,x_cur,"U");
+							mvprintw(y_cur+1,x_cur,"U");
+							mvprintw(y_cur+2,x_cur,"U");
+							attroff(COLOR_PAIR(STATEK_USTAWIANY));
+							move(y_cur, x_cur);
+						}
+						break;
+					default:
+						if (obrot == 0) {
+							if ( klawisz == KEY_UP || klawisz == KEY_DOWN || klawisz == KEY_LEFT || klawisz == KEY_RIGHT ) {
+								if ((x_cur == 31 || x_cur == 33) && klawisz == KEY_RIGHT ) {
+									x_cur = 35;
+								}
+								if  (x_cur == 17 && klawisz == KEY_LEFT) {
+									x_cur = 33;
+								}
+								ruchKursora(klawisz);
+							}
+							attron(COLOR_PAIR(STATEK_USTAWIANY));
+							mvprintw(y_cur,x_cur,"U");
+							mvprintw(y_cur,x_cur+2,"U");
+							mvprintw(y_cur,x_cur+4,"U");
+							attroff(COLOR_PAIR(STATEK_USTAWIANY));
+							move(y_cur, x_cur);
+							if ( klawisz == ' ' && sprawdzMiejsce(x_cur, y_cur) == 1 && sprawdzMiejsce(x_cur+2, y_cur) == 1 && sprawdzMiejsce(x_cur+4, y_cur) == 1) {
+								int xdelta;
+								int ydelta;
+								for (xdelta = (-2); xdelta <= 6; xdelta = xdelta + 2) {
+									for (ydelta = (-1); ydelta <=1; ++ydelta) {
+										zmienStan((x_cur + xdelta), (y_cur + ydelta), WODA_NIEDOZWOLONA);
+									}
+								}
+								move(y_cur, x_cur);
+								zmienStan(x_cur, y_cur, STATEK);
+								zmienStan(x_cur + 2, y_cur, STATEK);
+								zmienStan(x_cur + 4, y_cur, STATEK);
+								odswiezPlansze();
+								move(y_cur, x_cur);
+								hasToBreak = 1;
+								break;
+							}
+						} else {
+							if ( klawisz == KEY_UP || klawisz == KEY_DOWN || klawisz == KEY_LEFT || klawisz == KEY_RIGHT ) {
+								if ( ((y_cur == 14 || y_cur == 15) && klawisz == KEY_DOWN )) {
+								 	y_cur = 16;
+								}
+								if (y_cur == 7 && klawisz == KEY_UP) {
+									y_cur = 15;
+								}
+								ruchKursora(klawisz);
+							}
+							attron(COLOR_PAIR(STATEK_USTAWIANY));
+							mvprintw(y_cur,x_cur,"U");
+							mvprintw(y_cur+1,x_cur,"U");
+							mvprintw(y_cur+2,x_cur,"U");
+							attroff(COLOR_PAIR(STATEK_USTAWIANY));
+							move(y_cur, x_cur);
+							if ( klawisz == ' ' && sprawdzMiejsce(x_cur, y_cur) == 1 && sprawdzMiejsce(x_cur, y_cur+1) == 1 && sprawdzMiejsce(x_cur, y_cur+2) == 1) {
+								int xdelta;
+								int ydelta;
+								for (xdelta = (-2); xdelta <= 2; xdelta = xdelta + 2) {
+									for (ydelta = (-1); ydelta <=3; ++ydelta) {
+										zmienStan((x_cur + xdelta), (y_cur + ydelta), WODA_NIEDOZWOLONA);
+									}
+								}
+								move(y_cur, x_cur);
+								zmienStan(x_cur, y_cur, STATEK);
+								zmienStan(x_cur, y_cur + 1, STATEK);
+								zmienStan(x_cur, y_cur + 2, STATEK);
+								odswiezPlansze();
+								move(y_cur, x_cur);
+								hasToBreak = 1;
+								break;
+							}
+						}
+				}
+				if (hasToBreak == 1) {
+					break;
+				}
+
+
+			}
+			break;
+		case 4:
+			obrot = 0;
+			while ( (klawisz = getch() ) != 'q') {
+				odswiezPlansze();
+				move(y_cur, x_cur);
+
+
+
+				switch (klawisz) {
+					case 'r':
+						if (x_cur == 31 || x_cur == 33 || x_cur == 35) {
+							x_cur = 29;
+						}
+						if (y_cur == 14 || y_cur == 15 || y_cur == 16) {
+							y_cur = 13;
+						}
+						obrot = (obrot + 1)%2;
+						if (obrot == 0) {
+							attron(COLOR_PAIR(STATEK_USTAWIANY));
+							mvprintw(y_cur,x_cur,"U");
+							mvprintw(y_cur,x_cur+2,"U");
+							mvprintw(y_cur,x_cur+4,"U");
+							mvprintw(y_cur,x_cur+6,"U");
+							attroff(COLOR_PAIR(STATEK_USTAWIANY));
+							move(y_cur, x_cur);
+						} else {
+							attron(COLOR_PAIR(STATEK_USTAWIANY));
+							mvprintw(y_cur,x_cur,"U");
+							mvprintw(y_cur+1,x_cur,"U");
+							mvprintw(y_cur+2,x_cur,"U");
+							mvprintw(y_cur+3,x_cur,"U");
+							attroff(COLOR_PAIR(STATEK_USTAWIANY));
+							move(y_cur, x_cur);
+						}
+						break;
+					default:
+						if (obrot == 0) {
+							if ( klawisz == KEY_UP || klawisz == KEY_DOWN || klawisz == KEY_LEFT || klawisz == KEY_RIGHT ) {
+								if ((x_cur == 29 || x_cur == 31 || x_cur == 33) && klawisz == KEY_RIGHT ) {
+									x_cur = 35;
+								}
+								if  (x_cur == 17 && klawisz == KEY_LEFT) {
+									x_cur = 31;
+								}
+								ruchKursora(klawisz);
+							}
+							attron(COLOR_PAIR(STATEK_USTAWIANY));
+							mvprintw(y_cur,x_cur,"U");
+							mvprintw(y_cur,x_cur+2,"U");
+							mvprintw(y_cur,x_cur+4,"U");
+							mvprintw(y_cur,x_cur+6,"U");
+							attroff(COLOR_PAIR(STATEK_USTAWIANY));
+							move(y_cur, x_cur);
+							if ( klawisz == ' ' && sprawdzMiejsce(x_cur, y_cur) == 1 && sprawdzMiejsce(x_cur+2, y_cur) == 1 && sprawdzMiejsce(x_cur+4, y_cur) == 1 && sprawdzMiejsce(x_cur+6, y_cur) == 1) {
+								int xdelta;
+								int ydelta;
+								for (xdelta = (-2); xdelta <= 8; xdelta = xdelta + 2) {
+									for (ydelta = (-1); ydelta <=1; ++ydelta) {
+										zmienStan((x_cur + xdelta), (y_cur + ydelta), WODA_NIEDOZWOLONA);
+									}
+								}
+								move(y_cur, x_cur);
+								zmienStan(x_cur, y_cur, STATEK);
+								zmienStan(x_cur + 2, y_cur, STATEK);
+								zmienStan(x_cur + 4, y_cur, STATEK);
+								zmienStan(x_cur + 6, y_cur, STATEK);
+								odswiezPlansze();
+								move(y_cur, x_cur);
+								hasToBreak = 1;
+								break;
+							}
+						} else {
+							if ( klawisz == KEY_UP || klawisz == KEY_DOWN || klawisz == KEY_LEFT || klawisz == KEY_RIGHT ) {
+								if ( ((y_cur == 13 || y_cur == 14 || y_cur == 15) && klawisz == KEY_DOWN )) {
+								 	y_cur = 16;
+								}
+								if (y_cur == 7 && klawisz == KEY_UP) {
+									y_cur = 14;
+								}
+								ruchKursora(klawisz);
+							}
+							attron(COLOR_PAIR(STATEK_USTAWIANY));
+							mvprintw(y_cur,x_cur,"U");
+							mvprintw(y_cur+1,x_cur,"U");
+							mvprintw(y_cur+2,x_cur,"U");
+							mvprintw(y_cur+3,x_cur,"U");
+							attroff(COLOR_PAIR(STATEK_USTAWIANY));
+							move(y_cur, x_cur);
+							if ( klawisz == ' ' && sprawdzMiejsce(x_cur, y_cur) == 1 && sprawdzMiejsce(x_cur, y_cur+1) == 1 && sprawdzMiejsce(x_cur, y_cur+2) == 1 && sprawdzMiejsce(x_cur, y_cur+1) == 3) {
+								int xdelta;
+								int ydelta;
+								for (xdelta = (-2); xdelta <= 2; xdelta = xdelta + 2) {
+									for (ydelta = (-1); ydelta <=4; ++ydelta) {
+										zmienStan((x_cur + xdelta), (y_cur + ydelta), WODA_NIEDOZWOLONA);
+									}
+								}
+								move(y_cur, x_cur);
+								zmienStan(x_cur, y_cur, STATEK);
+								zmienStan(x_cur, y_cur + 1, STATEK);
+								zmienStan(x_cur, y_cur + 2, STATEK);
+								zmienStan(x_cur, y_cur + 3, STATEK);
+								odswiezPlansze();
+								move(y_cur, x_cur);
+								hasToBreak = 1;
+								break;
+							}
+						}
+				}
+				if (hasToBreak == 1) {
+					break;
+				}
+
+
+			}
+			break;
+	}
+	move(y_cur, x_cur);
+}
+
+int sprawdzMiejsce(int x_curs, int y_curs) {
+	int x, y;
+
+	
+	y = y_curs - 6;
+	if (x_curs < 36) {
+		x = x_curs/2 - 7;
+	}
+	else  if (x_curs > 42 ) {
+		x = (x_curs-1)/2 - 20;
+	}
+	mvprintw(WIDTH-40, 2, "Sprawdzam pole x= %d, y= %d", x, y);
+
+	if ( planszaGracza[x-1][y-1].czyMoznaUstawicStatek == dozwolony ) {
+		return 1;
+	}
+	else {
+		return -1;
 	}
 }
