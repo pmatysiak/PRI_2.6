@@ -27,7 +27,7 @@
 #define WODA_NIEDOZWOLONA 7
 #define KURSOR 8
 
-void odswiezPlansze();
+void odswiezLewaPlansze();
 void rysujPlansze();
 void zmienStanDebug();
 void zmienStan();
@@ -41,6 +41,11 @@ void inicjalizujPlansze();
 void ustawOkretyGracza();
 void ustawOkret();
 int sprawdzMiejsce();
+void gra();
+void turaGracza();
+void turaAI();
+int strzalGracza();
+int strzalAI();
 
 struct PolePlanszy {
 	enum stan {
@@ -72,6 +77,7 @@ struct Player komputer;
 
 
 int x_cur, y_cur;
+int zwyciestwo;
 
 int main()
 {
@@ -137,27 +143,16 @@ int main()
 
 	move(y_cur,x_cur);
 	refresh();
-	odswiezPlansze();
+	odswiezLewaPlansze();
 
-	ustawOkretyGracza();
+
+
+//	ustawOkretyGracza();
+
 
 	rysujPodgladOkretow();
 
-
-
-/*
-			TESTOWE ZAZNACZANIE STATUSU OKRETOW
-
-	komputer.okret_1 = 0;
-	odswiezPodgladOkretow();
-
-
-*/
-
-	czytajKlawisz();
-
-
-
+	gra();
 	
 	endwin();
 	return 0;
@@ -166,26 +161,27 @@ int main()
 void rysujPlansze() {
 	int x, y, plansza, cyferka;
 	char pole;
-	y = x = plansza = 0;
+	y = x = 0;
 	pole = '~';	//woda
 	cyferka = 1;
 	
 	//rysuj wode na srodku
 
-	for (plansza = 1; plansza <= 2; plansza++) {
-		for (y = TARGET_Y_MIN; y <= TARGET_Y_MAX ; y++) {
-			for (x = (plansza == 1 ? TARGET_X_MIN : STATUS_X_MIN); x <= (plansza == 1 ? TARGET_X_MAX : STATUS_X_MAX); x = x + 2 ) {
-				
-				if (plansza == 1 ) odswiezPole(x, y);
-				else odswiezPole(x-26, y);
+	//plansza gracza
 
-				/*
-				attron(COLOR_PAIR(WODA));
-				mvprintw(y, x, "%c", pole);
-				attroff(COLOR_PAIR(WODA));
+	
+	for (y = TARGET_Y_MIN; y <= TARGET_Y_MAX ; y++) {
+		for (x = TARGET_X_MIN; x <= TARGET_X_MAX; x = x + 2 ) {
+			odswiezPole(x, y);
+		}
+	}
 
-				*/
-			}
+	//plansza AI
+
+
+	for (y = STATUS_Y_MIN; y <= STATUS_Y_MAX ; y++) {
+		for (x = STATUS_X_MIN; x <= STATUS_X_MAX; x = x + 2 ) {
+			odswiezPole(x, y);
 		}
 	}
 
@@ -262,7 +258,7 @@ void rysujPlansze() {
 	}
 }
 
-void odswiezPlansze() {
+void odswiezLewaPlansze() {
 	int x, y, plansza, cyferka;
 	char pole;
 	y = x = plansza = 0;
@@ -384,43 +380,72 @@ void odswiezPole(int x_curs, int y_curs) {
 		x = x_curs/2 - 7;
 		stan = planszaGracza[x -1][y - 1].obiekt;
 		dozw = planszaGracza[x -1][y - 1].czyMoznaUstawicStatek;
-
+		attron(COLOR_PAIR(stan));
+		switch (stan) {
+			case WODA:
+				if (dozw == dozwolony) {
+					mvprintw(y+6,(x+7)*2+1,"~");						//zaznaczanie statek	
+				} else {
+					attron(COLOR_PAIR(WODA_NIEDOZWOLONA));
+					mvprintw(y+6,(x+7)*2+1,"-");
+					attroff(COLOR_PAIR(WODA_NIEDOZWOLONA));
+				}
+				break;
+			case STATEK_USTAWIANY:
+				mvprintw(y+6,(x+7)*2+1,"U");						//zaznaczanie statek
+				break;
+			case STATEK:
+				mvprintw(y+6,(x+7)*2+1,"S");						//zaznaczanie statek
+				break;
+			case TRAFIONY:
+				mvprintw(y+6,(x+7)*2+1,"*");						//zaznaczanie trafienie
+				break;
+			case ZATOPIONY:
+				mvprintw(y+6,(x+7)*2+1,"#");
+				break;
+			case PUDLO:
+				mvprintw(y+6,(x+7)*2+1,"O");						//zaznaczanie pudlo
+				break;
+		}
+		attroff(COLOR_PAIR(stan));
 	}
+
 	else  if (x_curs > 42 ) {
 		x = (x_curs-1)/2 - 20;
 		stan = planszaAI[x -1][y - 1].obiekt;
 		dozw = planszaAI[x -1][y - 1].czyMoznaUstawicStatek;
+		attron(COLOR_PAIR(stan));
+		switch (stan) {
+			case WODA:
+				if (dozw == dozwolony) {
+					mvprintw(y_curs, x_curs,"~");						//zaznaczanie statek	
+				} else {
+					attron(COLOR_PAIR(WODA_NIEDOZWOLONA));
+					mvprintw(y+6,(x+7)*2+1,"-");
+					attroff(COLOR_PAIR(WODA_NIEDOZWOLONA));
+				}
+				break;
+			case STATEK_USTAWIANY:
+				mvprintw(y_curs, x_curs,"U");						//zaznaczanie statek
+				break;
+			case STATEK:
+				mvprintw(y_curs, x_curs,"S");						//zaznaczanie statek
+				break;
+			case TRAFIONY:
+				mvprintw(y_curs, x_curs,"*");						//zaznaczanie trafienie
+				break;
+			case ZATOPIONY:
+				mvprintw(y_curs, x_curs,"#");
+				break;
+			case PUDLO:
+				mvprintw(y_curs, x_curs,"O");						//zaznaczanie pudlo
+				break;
+		}
+		attroff(COLOR_PAIR(stan));
 	}
 
 
-	attron(COLOR_PAIR(stan));
-	switch (stan) {
-		case WODA:
-			if (dozw == dozwolony) {
-				mvprintw(y+6,(x+7)*2+1,"~");						//zaznaczanie statek	
-			} else {
-				attron(COLOR_PAIR(WODA_NIEDOZWOLONA));
-				mvprintw(y+6,(x+7)*2+1,"-");
-				attroff(COLOR_PAIR(WODA_NIEDOZWOLONA));
-			}
-			break;
-		case STATEK_USTAWIANY:
-			mvprintw(y+6,(x+7)*2+1,"U");						//zaznaczanie statek
-			break;
-		case STATEK:
-			mvprintw(y+6,(x+7)*2+1,"S");						//zaznaczanie statek
-			break;
-		case TRAFIONY:
-			mvprintw(y+6,(x+7)*2+1,"*");						//zaznaczanie trafienie
-			break;
-		case ZATOPIONY:
-			mvprintw(y+6,(x+7)*2+1,"#");
-			break;
-		case PUDLO:
-			mvprintw(y+6,(x+7)*2+1,"O");						//zaznaczanie pudlo
-			break;
-	}
-	attroff(COLOR_PAIR(stan));
+	
 }
 void ruchKursora(int key) {
 	switch( key ) {
@@ -772,7 +797,7 @@ void czytajKlawisz() {
 				zmienStanDebug(x_cur, y_cur);			//zmiana stanu
 				//printw("%d",planszaGracza[x_cur][y_cur].obiekt );
 				odswiezPole(x_cur, y_cur);
-				//odswiezPlansze();
+				//odswiezLewaPlansze();
 				break;			
 			case KEY_F(5):								//reset planszy
 				inicjalizujPlansze();
@@ -826,7 +851,7 @@ void ustawOkret(int wielkoscOkretu) {
 	switch (wielkoscOkretu) {
 		case 1:
 			while ( (klawisz = getch() ) != 'q') {
-				odswiezPlansze();
+				odswiezLewaPlansze();
 				if ( klawisz == KEY_UP || klawisz == KEY_DOWN || klawisz == KEY_LEFT || klawisz == KEY_RIGHT ) {
 					ruchKursora(klawisz);
 				}
@@ -845,7 +870,7 @@ void ustawOkret(int wielkoscOkretu) {
 					move(y_cur, x_cur);
 					zmienStan(x_cur, y_cur, STATEK);
 					move(y_cur, x_cur);
-					odswiezPlansze();
+					odswiezLewaPlansze();
 					break;
 				}
 			}
@@ -853,7 +878,7 @@ void ustawOkret(int wielkoscOkretu) {
 		case 2:
 			obrot = 0;
 			while ( (klawisz = getch() ) != 'q') {
-				odswiezPlansze();
+				odswiezLewaPlansze();
 				move(y_cur, x_cur);
 
 
@@ -905,7 +930,7 @@ void ustawOkret(int wielkoscOkretu) {
 								move(y_cur, x_cur);
 								zmienStan(x_cur, y_cur, STATEK);
 								zmienStan(x_cur + 2, y_cur, STATEK);
-								odswiezPlansze();
+								odswiezLewaPlansze();
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -933,7 +958,7 @@ void ustawOkret(int wielkoscOkretu) {
 								move(y_cur, x_cur);
 								zmienStan(x_cur, y_cur, STATEK);
 								zmienStan(x_cur, y_cur + 1, STATEK);
-								odswiezPlansze();
+								odswiezLewaPlansze();
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -951,7 +976,7 @@ void ustawOkret(int wielkoscOkretu) {
 		case 3:
 			obrot = 0;
 			while ( (klawisz = getch() ) != 'q') {
-				odswiezPlansze();
+				odswiezLewaPlansze();
 				move(y_cur, x_cur);
 
 
@@ -1010,7 +1035,7 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur, y_cur, STATEK);
 								zmienStan(x_cur + 2, y_cur, STATEK);
 								zmienStan(x_cur + 4, y_cur, STATEK);
-								odswiezPlansze();
+								odswiezLewaPlansze();
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1043,7 +1068,7 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur, y_cur, STATEK);
 								zmienStan(x_cur, y_cur + 1, STATEK);
 								zmienStan(x_cur, y_cur + 2, STATEK);
-								odswiezPlansze();
+								odswiezLewaPlansze();
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1060,7 +1085,7 @@ void ustawOkret(int wielkoscOkretu) {
 		case 4:
 			obrot = 0;
 			while ( (klawisz = getch() ) != 'q') {
-				odswiezPlansze();
+				odswiezLewaPlansze();
 				move(y_cur, x_cur);
 
 
@@ -1123,7 +1148,7 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur + 2, y_cur, STATEK);
 								zmienStan(x_cur + 4, y_cur, STATEK);
 								zmienStan(x_cur + 6, y_cur, STATEK);
-								odswiezPlansze();
+								odswiezLewaPlansze();
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1158,7 +1183,7 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur, y_cur + 1, STATEK);
 								zmienStan(x_cur, y_cur + 2, STATEK);
 								zmienStan(x_cur, y_cur + 3, STATEK);
-								odswiezPlansze();
+								odswiezLewaPlansze();
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1195,4 +1220,135 @@ int sprawdzMiejsce(int x_curs, int y_curs) {
 	else {
 		return -1;
 	}
+}
+
+void gra() {
+
+	zwyciestwo = 0;											// ZMIEN NA 0
+
+	x_cur = STATUS_X_MIN;
+	y_cur = STATUS_Y_MIN;
+
+	while (zwyciestwo == 0) {
+	
+		turaGracza();
+		if (zwyciestwo == 1) {
+			break;
+		}
+		turaAI();
+	
+	}
+
+	if (zwyciestwo == 1) {
+		mvprintw(7,17,  "                                             ");
+		mvprintw(8,17,  "                                             ");
+		mvprintw(9,17,  "                                             ");
+		mvprintw(10,17, "                                             ");
+		mvprintw(11,17, "                   WYGRANA                   ");
+		mvprintw(12,17, "                                             ");
+		mvprintw(13,17, "                                             ");
+		mvprintw(14,17, "                                             ");
+		mvprintw(15,17, "                                             ");
+		mvprintw(16,17, "                                             ");
+	} else {
+		mvprintw(7,17,  "                                             ");
+		mvprintw(8,17,  "                                             ");
+		mvprintw(9,17,  "                                             ");
+		mvprintw(10,17, "                                             ");
+		mvprintw(11,17, "                  PRZEGRANA                  ");
+		mvprintw(12,17, "                                             ");
+		mvprintw(13,17, "                                             ");
+		mvprintw(14,17, "                                             ");
+		mvprintw(15,17, "                                             ");
+		mvprintw(16,17, "                                             ");
+	}
+	czytajKlawisz();
+}
+
+void turaGracza() {
+	int key;
+	int strzal;
+	int koniecTury;
+	koniecTury = 0;
+	while ( (key = getch())!= 'q' && koniecTury == 0) {
+
+		
+		switch( key ) {
+			case KEY_UP:
+				if ( y_cur > STATUS_Y_MIN ) {
+					y_cur -= 1;
+				} else {
+					y_cur = STATUS_Y_MAX;
+				}
+				break;
+			case KEY_DOWN:
+				if ( y_cur < STATUS_Y_MAX ) {
+					y_cur += 1;
+				} else {
+					y_cur = STATUS_Y_MIN;
+				}
+				break;
+			case KEY_LEFT:
+				if ( x_cur > STATUS_X_MIN ) {
+					x_cur -= 2;
+				} else {
+					x_cur = STATUS_X_MAX;
+				}
+				break;
+			case KEY_RIGHT:
+				if ( x_cur < STATUS_X_MAX ) {
+					x_cur += 2;
+				} else {
+					x_cur = STATUS_X_MIN;
+				}
+				break;
+			case ' ':
+			
+				if (strzalGracza(x_cur, y_cur) == 0 ) {
+					koniecTury = 1;
+					break;			
+				}
+			case 'm':
+				zwyciestwo = 1;
+				break;
+		}
+		
+		key = 0;
+
+		move(y_cur, x_cur);
+		refresh();
+	}
+}
+
+void turaAI() {
+	strzalAI();
+
+	
+}
+
+int strzalGracza(int x_curs, int y_curs) {
+	int x_tab, y_tab;
+	x_tab = (x_curs-43)/2;
+	y_tab = y_curs - 7;
+
+	if (planszaAI[x_tab][y_tab].obiekt == statek ) {
+		planszaAI[x_tab][y_tab].obiekt = trafiony;
+		
+		
+
+	}
+	if (planszaAI[x_tab][y_tab].obiekt == trafiony) {
+		mvprintw(y_curs, x_curs,"*");
+	}
+	//sprawdz czy wszsytkie - jak ta to zwyciestwo na 1
+	//odswiezPole(x_curs, y_curs);
+	return 1; //1 jak trafilo 0 jqak nie 
+}
+
+int strzalAI(int x_curs, int y_curs) {
+	//sprawdz czy trafilo
+	//sprawdz czy wszsytkie - jak ta to zwyciestwo na -1
+	//odswiezPole(x_curs, y_curs);
+	printw("trafilem");
+	return 0;
 }
