@@ -765,15 +765,12 @@ void odswiezPodgladOkretow() {
 void czytajKlawisz() {
 	int key;
 
-	while ( (key = getch() ) !='q') {
+	while ( (key = getch() ) !=' ') {
 
-		if ( key == KEY_UP || key == KEY_DOWN || key == KEY_LEFT || key == KEY_RIGHT ) {
-			ruchKursora(key);
-		}
-		else if (zwyciestwo != 0) {
+		if (zwyciestwo != 0) {
 			break;
 		}
-		else
+	/*	else
 		switch ( key ) {
 			
 	#if DEBUG == 1
@@ -806,11 +803,7 @@ void czytajKlawisz() {
 
 
 	#endif
-			case 'x':
-				attron(COLOR_PAIR(WODA_NIEDOZWOLONA));
-				printw("-");						//zaznaczanie woda niedozwolona
-				attroff(COLOR_PAIR(WODA_NIEDOZWOLONA));
-				break;		
+					
 			case ' ':
 				//planszaGracza[x_cur][y_cur].obiekt = statek;
 				zmienStanDebug(x_cur, y_cur);			//zmiana stanu
@@ -821,8 +814,8 @@ void czytajKlawisz() {
 	//		case KEY_F(5):								//reset planszy
 	//			inicjalizujPlansze();
 	//			rysujPlansze();
-	//			break;
-		}
+	//			break;                     
+		}					*/
 		key = 0;
 
 		move(y_cur, x_cur);
@@ -1212,7 +1205,7 @@ void ustawOkret(int wielkoscOkretu) {
 							mvprintw(y_cur+3,x_cur,"U");
 							attroff(COLOR_PAIR(STATEK_USTAWIANY));
 							move(y_cur, x_cur);
-							if ( klawisz == ' ' && sprawdzMiejsce(x_cur, y_cur) == 1 && sprawdzMiejsce(x_cur, y_cur+1) == 1 && sprawdzMiejsce(x_cur, y_cur+2) == 1 && sprawdzMiejsce(x_cur, y_cur+1) == 3) {
+							if ( klawisz == ' ' && sprawdzMiejsce(x_cur, y_cur) == 1 && sprawdzMiejsce(x_cur, y_cur+1) == 1 && sprawdzMiejsce(x_cur, y_cur+2) == 1 && sprawdzMiejsce(x_cur, y_cur+3) == 1) {
 								int xdelta;
 								int ydelta;
 								for (xdelta = (-2); xdelta <= 2; xdelta = xdelta + 2) {
@@ -1355,6 +1348,16 @@ void turaGracza() {
 					break;			
 				}
 				break;
+			case 'x':
+				attron(COLOR_PAIR(PUDLO));
+				mvprintw(y_cur, x_cur, "X");						//zaznaczanie woda niedozwolona
+				attroff(COLOR_PAIR(PUDLO));
+				break;
+			case 'p':
+				attron(COLOR_PAIR(WODA));
+				mvprintw(y_cur, x_cur, "~");						//zaznaczanie woda niedozwolona
+				attroff(COLOR_PAIR(WODA));
+				break;
 			case 'm':
 				zwyciestwo = 1;
 				break;
@@ -1400,9 +1403,11 @@ int strzalGracza(int x_curs, int y_curs) {
 
 	}
 	else if (planszaAI[x_tab][y_tab].obiekt == trafiony) {
+		odswiezPole(x_curs, y_curs);
 		return 1;
 	}
 	else if (planszaAI[x_tab][y_tab].obiekt == pudlo) {
+		odswiezPole(x_curs, y_curs);
 		return 1;
 	}
 	else {
