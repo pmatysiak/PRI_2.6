@@ -123,7 +123,10 @@ int main()
 	}
 */
 
-
+	//wyswietlanie tytulu
+	attron(A_REVERSE);
+	mvprintw(0, 0, "                                     OKRETY                                     ");
+	attroff(A_REVERSE);
 	//wyswietlanie sciagi na dole
 
 	wyswietlSciage();
@@ -170,10 +173,11 @@ void ustawKolory() {
 }
 
 void rysujPlansze() {
-	int x, y, plansza, cyferka;
-	char pole;
+	int x, y, cyferka;
+	//int plansza;
+	//char pole;
 	y = x = 0;
-	pole = '~';	//woda
+	//pole = '~';	//woda
 	cyferka = 1;
 	
 	//rysuj wode na srodku
@@ -272,7 +276,7 @@ void rysujPlansze() {
 void odswiezLewaPlansze() {
 	int x, y;
 	//int cyferka;
-	char pole;
+	//char pole;
 	y = x  = 0;
 	//cyferka = 1;
 	
@@ -507,6 +511,9 @@ void ruchKursora(int key) {
 }
 
 void wyswietlSciage() {
+
+
+
 	int szerokosc_pojedynczej_sciagi;
 	szerokosc_pojedynczej_sciagi = 14;
 
@@ -879,7 +886,7 @@ void ustawOkret(int wielkoscOkretu) {
 	
 	move(y_cur, x_cur);
 	int klawisz;
-	int i;
+	//int i;
 	int obrot;
 	int hasToBreak;
 	hasToBreak = 0;
@@ -1305,7 +1312,7 @@ void gra() {
 
 void turaGracza() {
 	int key;
-	int strzal;
+	//int strzal;
 	int koniecTury;
 	int czyTrafione;
 	koniecTury = 0;
@@ -1477,7 +1484,7 @@ void ustawOkretyAI() {
 
 void ustawOkretAI(int wielkoscOkretu) {
 	
-	int i;
+//	int i;
 	int x, y;
 	int obrot;
 	int czyStatekOK;
