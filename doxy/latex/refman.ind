@@ -1,0 +1,210 @@
+\begin{theindex}
+
+  \item {czy\+Mozna\+Ustawic\+Statek}
+    \subitem {Pole\+Planszy}, 6
+  \item {czytaj\+Klawisz}
+    \subitem {znaki.\+c}, 13
+
+  \indexspace
+
+  \item {D\+E\+B\+UG}
+    \subitem {znaki.\+c}, 9
+  \item {dozwolenie}
+    \subitem {Pole\+Planszy}, 5
+
+  \indexspace
+
+  \item {gra}
+    \subitem {znaki.\+c}, 13
+
+  \indexspace
+
+  \item {H\+E\+I\+G\+HT}
+    \subitem {znaki.\+c}, 9
+
+  \indexspace
+
+  \item {inicjalizuj\+Plansze}
+    \subitem {znaki.\+c}, 13
+
+  \indexspace
+
+  \item {K\+U\+R\+S\+OR}
+    \subitem {znaki.\+c}, 10
+  \item {kratki\+Okretow\+AI}
+    \subitem {znaki.\+c}, 18
+  \item {kratki\+Okretow\+Gracza}
+    \subitem {znaki.\+c}, 18
+
+  \indexspace
+
+  \item {main}
+    \subitem {znaki.\+c}, 13
+
+  \indexspace
+
+  \item {obiekt}
+    \subitem {Pole\+Planszy}, 6
+  \item {odswiez\+Lewa\+Plansze}
+    \subitem {znaki.\+c}, 13
+  \item {odswiez\+Pole}
+    \subitem {znaki.\+c}, 13
+
+  \indexspace
+
+  \item {P\+U\+D\+LO}
+    \subitem {znaki.\+c}, 10
+  \item {plansza\+AI}
+    \subitem {znaki.\+c}, 18
+  \item {plansza\+Gracza}
+    \subitem {znaki.\+c}, 19
+  \item {Pole\+Planszy}, 5
+    \subitem {czy\+Mozna\+Ustawic\+Statek}, 6
+    \subitem {dozwolenie}, 5
+    \subitem {obiekt}, 6
+    \subitem {stan}, 6
+
+  \indexspace
+
+  \item {ruch\+Kursora}
+    \subitem {znaki.\+c}, 14
+  \item {rysuj\+Plansze}
+    \subitem {znaki.\+c}, 14
+
+  \indexspace
+
+  \item {S\+T\+A\+T\+E\+K\+\_\+\+U\+S\+T\+A\+W\+I\+A\+NY}
+    \subitem {znaki.\+c}, 10
+  \item {S\+T\+A\+T\+EK}
+    \subitem {znaki.\+c}, 10
+  \item {S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+AX}
+    \subitem {znaki.\+c}, 10
+  \item {S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+IN}
+    \subitem {znaki.\+c}, 10
+  \item {S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+AX}
+    \subitem {znaki.\+c}, 11
+  \item {S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+IN}
+    \subitem {znaki.\+c}, 11
+  \item {sprawdz\+Miejsce}
+    \subitem {znaki.\+c}, 14
+  \item {sprawdz\+Miejsce\+AI}
+    \subitem {znaki.\+c}, 14
+  \item {stan}
+    \subitem {Pole\+Planszy}, 6
+  \item {strzal\+AI}
+    \subitem {znaki.\+c}, 15
+  \item {strzal\+Gracza}
+    \subitem {znaki.\+c}, 15
+
+  \indexspace
+
+  \item {T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+AX}
+    \subitem {znaki.\+c}, 11
+  \item {T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+IN}
+    \subitem {znaki.\+c}, 11
+  \item {T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+AX}
+    \subitem {znaki.\+c}, 11
+  \item {T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+IN}
+    \subitem {znaki.\+c}, 11
+  \item {T\+R\+A\+F\+I\+O\+NY}
+    \subitem {znaki.\+c}, 12
+  \item {tura\+AI}
+    \subitem {znaki.\+c}, 16
+  \item {tura\+Gracza}
+    \subitem {znaki.\+c}, 16
+
+  \indexspace
+
+  \item {ustaw\+Kolory}
+    \subitem {znaki.\+c}, 16
+  \item {ustaw\+Okret}
+    \subitem {znaki.\+c}, 16
+  \item {ustaw\+Okret\+AI}
+    \subitem {znaki.\+c}, 16
+  \item {ustaw\+Okrety\+AI}
+    \subitem {znaki.\+c}, 17
+  \item {ustaw\+Okrety\+Gracza}
+    \subitem {znaki.\+c}, 17
+
+  \indexspace
+
+  \item {W\+I\+D\+TH}
+    \subitem {znaki.\+c}, 12
+  \item {W\+O\+D\+A\+\_\+\+N\+I\+E\+D\+O\+Z\+W\+O\+L\+O\+NA}
+    \subitem {znaki.\+c}, 12
+  \item {W\+O\+DA}
+    \subitem {znaki.\+c}, 12
+  \item {wyswietl\+Sciage}
+    \subitem {znaki.\+c}, 17
+
+  \indexspace
+
+  \item {x\+\_\+cur}
+    \subitem {znaki.\+c}, 19
+
+  \indexspace
+
+  \item {y\+\_\+cur}
+    \subitem {znaki.\+c}, 19
+
+  \indexspace
+
+  \item {Z\+A\+T\+O\+P\+I\+O\+NY}
+    \subitem {znaki.\+c}, 12
+  \item {zmien\+Stan}
+    \subitem {znaki.\+c}, 17
+  \item {zmien\+Stan\+AI}
+    \subitem {znaki.\+c}, 18
+  \item {znaki.\+c}, 7
+    \subitem {czytaj\+Klawisz}, 13
+    \subitem {D\+E\+B\+UG}, 9
+    \subitem {gra}, 13
+    \subitem {H\+E\+I\+G\+HT}, 9
+    \subitem {inicjalizuj\+Plansze}, 13
+    \subitem {K\+U\+R\+S\+OR}, 10
+    \subitem {kratki\+Okretow\+AI}, 18
+    \subitem {kratki\+Okretow\+Gracza}, 18
+    \subitem {main}, 13
+    \subitem {odswiez\+Lewa\+Plansze}, 13
+    \subitem {odswiez\+Pole}, 13
+    \subitem {P\+U\+D\+LO}, 10
+    \subitem {plansza\+AI}, 18
+    \subitem {plansza\+Gracza}, 19
+    \subitem {ruch\+Kursora}, 14
+    \subitem {rysuj\+Plansze}, 14
+    \subitem {S\+T\+A\+T\+E\+K\+\_\+\+U\+S\+T\+A\+W\+I\+A\+NY}, 10
+    \subitem {S\+T\+A\+T\+EK}, 10
+    \subitem {S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+AX}, 10
+    \subitem {S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+IN}, 10
+    \subitem {S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+AX}, 11
+    \subitem {S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+IN}, 11
+    \subitem {sprawdz\+Miejsce}, 14
+    \subitem {sprawdz\+Miejsce\+AI}, 14
+    \subitem {strzal\+AI}, 15
+    \subitem {strzal\+Gracza}, 15
+    \subitem {T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+AX}, 11
+    \subitem {T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+IN}, 11
+    \subitem {T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+AX}, 11
+    \subitem {T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+IN}, 11
+    \subitem {T\+R\+A\+F\+I\+O\+NY}, 12
+    \subitem {tura\+AI}, 16
+    \subitem {tura\+Gracza}, 16
+    \subitem {ustaw\+Kolory}, 16
+    \subitem {ustaw\+Okret}, 16
+    \subitem {ustaw\+Okret\+AI}, 16
+    \subitem {ustaw\+Okrety\+AI}, 17
+    \subitem {ustaw\+Okrety\+Gracza}, 17
+    \subitem {W\+I\+D\+TH}, 12
+    \subitem {W\+O\+D\+A\+\_\+\+N\+I\+E\+D\+O\+Z\+W\+O\+L\+O\+NA}, 12
+    \subitem {W\+O\+DA}, 12
+    \subitem {wyswietl\+Sciage}, 17
+    \subitem {x\+\_\+cur}, 19
+    \subitem {y\+\_\+cur}, 19
+    \subitem {Z\+A\+T\+O\+P\+I\+O\+NY}, 12
+    \subitem {zmien\+Stan}, 17
+    \subitem {zmien\+Stan\+AI}, 18
+    \subitem {zwyciestwo}, 19
+  \item {zwyciestwo}
+    \subitem {znaki.\+c}, 19
+
+\end{theindex}

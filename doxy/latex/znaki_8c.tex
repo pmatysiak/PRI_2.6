@@ -1,0 +1,644 @@
+\section{znaki.\+c File Reference}
+\label{znaki_8c}\index{znaki.\+c@{znaki.\+c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$time.\+h$>$}\newline
+{\ttfamily \#include $<$ncurses.\+h$>$}\newline
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \textbf{ Pole\+Planszy}
+\begin{DoxyCompactList}\small\item\em Pojedyncze pole planszy. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \textbf{ D\+E\+B\+UG}~0
+\begin{DoxyCompactList}\small\item\em Podstawy programowania -\/ projekt 2.\+6 -\/ Program realizujący grę „\+Okręty” w wersji dla jednego gracza. Oponentem ma być „komputer-\/program”. \end{DoxyCompactList}\item 
+\#define \textbf{ W\+I\+D\+TH}~80
+\begin{DoxyCompactList}\small\item\em szerokosc terminala \end{DoxyCompactList}\item 
+\#define \textbf{ H\+E\+I\+G\+HT}~24
+\begin{DoxyCompactList}\small\item\em wysokosc terminala \end{DoxyCompactList}\item 
+\#define \textbf{ T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+IN}~17
+\begin{DoxyCompactList}\small\item\em pozycja lewej krawedzi lewej planszy \end{DoxyCompactList}\item 
+\#define \textbf{ T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+AX}~17 + 18
+\begin{DoxyCompactList}\small\item\em pozycja prawe krawedzi lewej planszy \end{DoxyCompactList}\item 
+\#define \textbf{ T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+IN}~7
+\begin{DoxyCompactList}\small\item\em pozycja gornej krawedzi lewej planszy \end{DoxyCompactList}\item 
+\#define \textbf{ T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+AX}~7 + 9
+\begin{DoxyCompactList}\small\item\em pozycja dolnej krawedzi lewej planszy \end{DoxyCompactList}\item 
+\#define \textbf{ S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+IN}~43
+\begin{DoxyCompactList}\small\item\em pozycja lewej krawedzi prawej planszy \end{DoxyCompactList}\item 
+\#define \textbf{ S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+AX}~43 + 18
+\begin{DoxyCompactList}\small\item\em pozycja prawej krawedzi prawej planszy \end{DoxyCompactList}\item 
+\#define \textbf{ S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+IN}~7
+\begin{DoxyCompactList}\small\item\em pozycja gornej krawedzi prawej planszy \end{DoxyCompactList}\item 
+\#define \textbf{ S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+AX}~7 + 9
+\begin{DoxyCompactList}\small\item\em pozycja dolnej krawedzi prawej planszy \end{DoxyCompactList}\item 
+\#define \textbf{ W\+O\+DA}~1
+\begin{DoxyCompactList}\small\item\em obiekt woda \end{DoxyCompactList}\item 
+\#define \textbf{ S\+T\+A\+T\+E\+K\+\_\+\+U\+S\+T\+A\+W\+I\+A\+NY}~2
+\begin{DoxyCompactList}\small\item\em obiekt statek ustawiany w poczatkowej fazie gry \end{DoxyCompactList}\item 
+\#define \textbf{ S\+T\+A\+T\+EK}~3
+\begin{DoxyCompactList}\small\item\em obiekt statek \end{DoxyCompactList}\item 
+\#define \textbf{ T\+R\+A\+F\+I\+O\+NY}~4
+\begin{DoxyCompactList}\small\item\em obiekt statek trafiony \end{DoxyCompactList}\item 
+\#define \textbf{ Z\+A\+T\+O\+P\+I\+O\+NY}~5
+\begin{DoxyCompactList}\small\item\em obiekt statek zatopiony -\/ nieuzywany w tej wersji \end{DoxyCompactList}\item 
+\#define \textbf{ P\+U\+D\+LO}~6
+\begin{DoxyCompactList}\small\item\em obiekt puste pole trafione \end{DoxyCompactList}\item 
+\#define \textbf{ W\+O\+D\+A\+\_\+\+N\+I\+E\+D\+O\+Z\+W\+O\+L\+O\+NA}~7
+\begin{DoxyCompactList}\small\item\em wyglad wody na ktorej nie mozna postawic okretu \end{DoxyCompactList}\item 
+\#define \textbf{ K\+U\+R\+S\+OR}~8
+\begin{DoxyCompactList}\small\item\em wyglad kursora \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \textbf{ ustaw\+Kolory} ()
+\begin{DoxyCompactList}\small\item\em Funkcja ustaw\+Kolory ustawia pary kolorow w ncurses dla roznych pol. \end{DoxyCompactList}\item 
+void \textbf{ rysuj\+Plansze} ()
+\begin{DoxyCompactList}\small\item\em Funkcja rysuj\+Plansze rysuje na ekranie plansze z ramkami, literami i cyframi i wypelnia je woda. \end{DoxyCompactList}\item 
+void \textbf{ odswiez\+Lewa\+Plansze} ()
+\begin{DoxyCompactList}\small\item\em Funkcja odswiez\+Lewa\+Plansze wywoluje funkcje odswiez\+Pole dla kazdego pola lewj planszy. \end{DoxyCompactList}\item 
+void \textbf{ zmien\+Stan} (int x\+\_\+curs, int y\+\_\+curs, int stan)
+\item 
+void \textbf{ odswiez\+Pole} (int x\+\_\+curs, int y\+\_\+curs)
+\item 
+void \textbf{ ruch\+Kursora} (int key)
+\item 
+void \textbf{ wyswietl\+Sciage} ()
+\begin{DoxyCompactList}\small\item\em Funkcja wyswietl\+Sciage wypisuje na dole ekranu przydatne informacje. \end{DoxyCompactList}\item 
+void \textbf{ czytaj\+Klawisz} ()
+\begin{DoxyCompactList}\small\item\em Funkcja czytaj\+Klawisz czeka na nacisniecie spacji aby wyjsc z gry. \end{DoxyCompactList}\item 
+void \textbf{ inicjalizuj\+Plansze} ()
+\begin{DoxyCompactList}\small\item\em Funkcja inicjalizuj\+Plansze wypelnia tablice danych gracza i komputera woda. \end{DoxyCompactList}\item 
+void \textbf{ ustaw\+Okrety\+Gracza} ()
+\begin{DoxyCompactList}\small\item\em Funkcja ustaw\+Okrety\+Gracza wywoluje funkcje ustaw\+Okret dla czteromasztowca, dwoch trojmasztowcow, trzech dwumasztowcow i czterech jednomasztowcow gracza. \end{DoxyCompactList}\item 
+void \textbf{ ustaw\+Okret} (int wielkosc\+Okretu)
+\item 
+int \textbf{ sprawdz\+Miejsce} (int x\+\_\+curs, int y\+\_\+curs)
+\item 
+void \textbf{ gra} ()
+\begin{DoxyCompactList}\small\item\em Funkcja gra wywoluje po kolei funkcje tura\+Gracza i tura\+AI az do trafienia wszystkich statkow przez gracza lub komputer. Na koniec wyswietla stosowny komunikat i wywoluje funkcje cztaj\+Klawisz. \end{DoxyCompactList}\item 
+void \textbf{ tura\+Gracza} ()
+\begin{DoxyCompactList}\small\item\em Funcja tura\+Gracza obsluguje ruch kursora przy ataku, wywoluje funkcje strzal\+Gracza po nacisnieciu spacji tak dlugo jak trafiany jest statek lub uprzednio trafione pole oraz pozwala na zaznaczanie pol, ktore gracz uwaza za pewne pudla X-\/em i rysowanie wody w wypadku pomylki. \end{DoxyCompactList}\item 
+void \textbf{ tura\+AI} ()
+\begin{DoxyCompactList}\small\item\em Funkcja tura\+AI wywoluje funkcje strzal\+AI tak dlugo jak trafiony zostaje statek. \end{DoxyCompactList}\item 
+int \textbf{ strzal\+Gracza} (int x\+\_\+curs, int y\+\_\+curs)
+\item 
+int \textbf{ strzal\+AI} ()
+\item 
+int \textbf{ sprawdz\+Miejsce\+AI} (int x, int y)
+\item 
+void \textbf{ ustaw\+Okrety\+AI} ()
+\begin{DoxyCompactList}\small\item\em Funkcja ustaw\+Okrety\+AI wywoluje funkcje ustaw\+Okret\+AI dla czteromasztowca, dwoch trojmasztowcow, trzech dwumasztowcow i czterech jednomasztowcow komputera. \end{DoxyCompactList}\item 
+void \textbf{ ustaw\+Okret\+AI} (int wielkosc\+Okretu)
+\item 
+void \textbf{ zmien\+Stan\+AI} (int x, int y, int stan)
+\item 
+int \textbf{ main} ()
+\begin{DoxyCompactList}\small\item\em Funkcja glowna gry. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+struct \textbf{ Pole\+Planszy} \textbf{ plansza\+Gracza} [10][10]
+\begin{DoxyCompactList}\small\item\em tablica dwuwymiarowa pol planczy gracza \end{DoxyCompactList}\item 
+struct \textbf{ Pole\+Planszy} \textbf{ plansza\+AI} [10][10]
+\begin{DoxyCompactList}\small\item\em tablica dwuwymiarowa pol planczy komputera \end{DoxyCompactList}\item 
+int \textbf{ kratki\+Okretow\+Gracza}
+\begin{DoxyCompactList}\small\item\em liczba pol na ktorych sa okrety gracza. \end{DoxyCompactList}\item 
+int \textbf{ kratki\+Okretow\+AI}
+\begin{DoxyCompactList}\small\item\em liczba pol na ktorych sa okrety komputera. \end{DoxyCompactList}\item 
+int \textbf{ x\+\_\+cur}
+\begin{DoxyCompactList}\small\item\em wspolrzedna x kursora. \end{DoxyCompactList}\item 
+int \textbf{ y\+\_\+cur}
+\begin{DoxyCompactList}\small\item\em wspolrzedna y kursora. \end{DoxyCompactList}\item 
+int \textbf{ zwyciestwo}
+\begin{DoxyCompactList}\small\item\em wartosc 0 dla trwajacej gry, 1 po zwyciestwie gracza i -\/1 po zwyciestwie komputera. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\mbox{\label{znaki_8c_ad72dbcf6d0153db1b8d8a58001feed83}} 
+\index{znaki.\+c@{znaki.\+c}!D\+E\+B\+UG@{D\+E\+B\+UG}}
+\index{D\+E\+B\+UG@{D\+E\+B\+UG}!znaki.\+c@{znaki.\+c}}
+\subsubsection{D\+E\+B\+UG}
+{\footnotesize\ttfamily \#define D\+E\+B\+UG~0}
+
+
+
+Podstawy programowania -\/ projekt 2.\+6 -\/ Program realizujący grę „\+Okręty” w wersji dla jednego gracza. Oponentem ma być „komputer-\/program”. 
+
+Zasady gry\+: Gracz rozstawia na planszy o rozmiarach 10x10 następujące okręty\+: czteryjednomasztowce (zajmujące jedną pozycję na planszy), trzy dwumasztowce (zajmujące dwa miejsca na planszy), dwa trzymasztowce (zajmujące trzy miejsca na planszy), jeden czteromasztowiec (zajmujący cztery miejsca na planszy). Okręty nie mogą się za sobą stykać w żaden sposób – również narożnikami pól, na których się znajdują. Oponent rozstawia swoje okręty losowo, zgodnie z powyższymi zasadami. Gracze naprzemiennie „strzelają” w planszę przeciwnika aż do zatopienia wszystkich jego okrętów. Po oddaniu strzału celnego gracz ma prawo strzelać dalej aż do chybienia. \begin{DoxyAuthor}{Author}
+Piotr Matysiak -\/ grupa 1\+AR 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2017-\/2018zmienna do testowania 
+\end{DoxyDate}
+\mbox{\label{znaki_8c_aed89bd71aee8be823e8a20ec4e093c1e}} 
+\index{znaki.\+c@{znaki.\+c}!H\+E\+I\+G\+HT@{H\+E\+I\+G\+HT}}
+\index{H\+E\+I\+G\+HT@{H\+E\+I\+G\+HT}!znaki.\+c@{znaki.\+c}}
+\subsubsection{H\+E\+I\+G\+HT}
+{\footnotesize\ttfamily \#define H\+E\+I\+G\+HT~24}
+
+
+
+wysokosc terminala 
+
+\mbox{\label{znaki_8c_a3b0e95c317e2eba1c0943dc4ef21aef8}} 
+\index{znaki.\+c@{znaki.\+c}!K\+U\+R\+S\+OR@{K\+U\+R\+S\+OR}}
+\index{K\+U\+R\+S\+OR@{K\+U\+R\+S\+OR}!znaki.\+c@{znaki.\+c}}
+\subsubsection{K\+U\+R\+S\+OR}
+{\footnotesize\ttfamily \#define K\+U\+R\+S\+OR~8}
+
+
+
+wyglad kursora 
+
+\mbox{\label{znaki_8c_aef0b9e5d1163329feff4e056a5e109ec}} 
+\index{znaki.\+c@{znaki.\+c}!P\+U\+D\+LO@{P\+U\+D\+LO}}
+\index{P\+U\+D\+LO@{P\+U\+D\+LO}!znaki.\+c@{znaki.\+c}}
+\subsubsection{P\+U\+D\+LO}
+{\footnotesize\ttfamily \#define P\+U\+D\+LO~6}
+
+
+
+obiekt puste pole trafione 
+
+\mbox{\label{znaki_8c_aae9f99501a5af20c35090f1cc9d1e4e2}} 
+\index{znaki.\+c@{znaki.\+c}!S\+T\+A\+T\+EK@{S\+T\+A\+T\+EK}}
+\index{S\+T\+A\+T\+EK@{S\+T\+A\+T\+EK}!znaki.\+c@{znaki.\+c}}
+\subsubsection{S\+T\+A\+T\+EK}
+{\footnotesize\ttfamily \#define S\+T\+A\+T\+EK~3}
+
+
+
+obiekt statek 
+
+\mbox{\label{znaki_8c_ab23a0b5fd0ac8db21cb573370e821cc4}} 
+\index{znaki.\+c@{znaki.\+c}!S\+T\+A\+T\+E\+K\+\_\+\+U\+S\+T\+A\+W\+I\+A\+NY@{S\+T\+A\+T\+E\+K\+\_\+\+U\+S\+T\+A\+W\+I\+A\+NY}}
+\index{S\+T\+A\+T\+E\+K\+\_\+\+U\+S\+T\+A\+W\+I\+A\+NY@{S\+T\+A\+T\+E\+K\+\_\+\+U\+S\+T\+A\+W\+I\+A\+NY}!znaki.\+c@{znaki.\+c}}
+\subsubsection{S\+T\+A\+T\+E\+K\+\_\+\+U\+S\+T\+A\+W\+I\+A\+NY}
+{\footnotesize\ttfamily \#define S\+T\+A\+T\+E\+K\+\_\+\+U\+S\+T\+A\+W\+I\+A\+NY~2}
+
+
+
+obiekt statek ustawiany w poczatkowej fazie gry 
+
+\mbox{\label{znaki_8c_a57742fac3d0df4b6230c706a868d4569}} 
+\index{znaki.\+c@{znaki.\+c}!S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+AX@{S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+AX}}
+\index{S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+AX@{S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+AX}!znaki.\+c@{znaki.\+c}}
+\subsubsection{S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+AX}
+{\footnotesize\ttfamily \#define S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+AX~43 + 18}
+
+
+
+pozycja prawej krawedzi prawej planszy 
+
+\mbox{\label{znaki_8c_a4a16b16856b7cbf7106a02d6a1889236}} 
+\index{znaki.\+c@{znaki.\+c}!S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+IN@{S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+IN}}
+\index{S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+IN@{S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+IN}!znaki.\+c@{znaki.\+c}}
+\subsubsection{S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+IN}
+{\footnotesize\ttfamily \#define S\+T\+A\+T\+U\+S\+\_\+\+X\+\_\+\+M\+IN~43}
+
+
+
+pozycja lewej krawedzi prawej planszy 
+
+\mbox{\label{znaki_8c_a1e18957dd478b8b28f31de79d18146c1}} 
+\index{znaki.\+c@{znaki.\+c}!S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+AX@{S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+AX}}
+\index{S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+AX@{S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+AX}!znaki.\+c@{znaki.\+c}}
+\subsubsection{S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+AX}
+{\footnotesize\ttfamily \#define S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+AX~7 + 9}
+
+
+
+pozycja dolnej krawedzi prawej planszy 
+
+\mbox{\label{znaki_8c_ad9a9792d845c2fbbb1594a9e160a2666}} 
+\index{znaki.\+c@{znaki.\+c}!S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+IN@{S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+IN}}
+\index{S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+IN@{S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+IN}!znaki.\+c@{znaki.\+c}}
+\subsubsection{S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+IN}
+{\footnotesize\ttfamily \#define S\+T\+A\+T\+U\+S\+\_\+\+Y\+\_\+\+M\+IN~7}
+
+
+
+pozycja gornej krawedzi prawej planszy 
+
+\mbox{\label{znaki_8c_ad94d35c1d97037ffaf053081a11fc179}} 
+\index{znaki.\+c@{znaki.\+c}!T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+AX@{T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+AX}}
+\index{T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+AX@{T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+AX}!znaki.\+c@{znaki.\+c}}
+\subsubsection{T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+AX}
+{\footnotesize\ttfamily \#define T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+AX~17 + 18}
+
+
+
+pozycja prawe krawedzi lewej planszy 
+
+\mbox{\label{znaki_8c_a08067cfde0161f683a1e09e69ed6ecc0}} 
+\index{znaki.\+c@{znaki.\+c}!T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+IN@{T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+IN}}
+\index{T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+IN@{T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+IN}!znaki.\+c@{znaki.\+c}}
+\subsubsection{T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+IN}
+{\footnotesize\ttfamily \#define T\+A\+R\+G\+E\+T\+\_\+\+X\+\_\+\+M\+IN~17}
+
+
+
+pozycja lewej krawedzi lewej planszy 
+
+\mbox{\label{znaki_8c_adea87f4dc4e95f46571842b8f15e0152}} 
+\index{znaki.\+c@{znaki.\+c}!T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+AX@{T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+AX}}
+\index{T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+AX@{T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+AX}!znaki.\+c@{znaki.\+c}}
+\subsubsection{T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+AX}
+{\footnotesize\ttfamily \#define T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+AX~7 + 9}
+
+
+
+pozycja dolnej krawedzi lewej planszy 
+
+\mbox{\label{znaki_8c_ade67175a2f1163c45e7640b47a4dd452}} 
+\index{znaki.\+c@{znaki.\+c}!T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+IN@{T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+IN}}
+\index{T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+IN@{T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+IN}!znaki.\+c@{znaki.\+c}}
+\subsubsection{T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+IN}
+{\footnotesize\ttfamily \#define T\+A\+R\+G\+E\+T\+\_\+\+Y\+\_\+\+M\+IN~7}
+
+
+
+pozycja gornej krawedzi lewej planszy 
+
+\mbox{\label{znaki_8c_a84594aea4e9e023691c7048d921a5d21}} 
+\index{znaki.\+c@{znaki.\+c}!T\+R\+A\+F\+I\+O\+NY@{T\+R\+A\+F\+I\+O\+NY}}
+\index{T\+R\+A\+F\+I\+O\+NY@{T\+R\+A\+F\+I\+O\+NY}!znaki.\+c@{znaki.\+c}}
+\subsubsection{T\+R\+A\+F\+I\+O\+NY}
+{\footnotesize\ttfamily \#define T\+R\+A\+F\+I\+O\+NY~4}
+
+
+
+obiekt statek trafiony 
+
+\mbox{\label{znaki_8c_a241aeeb764887ae5e3de58b98f04b16d}} 
+\index{znaki.\+c@{znaki.\+c}!W\+I\+D\+TH@{W\+I\+D\+TH}}
+\index{W\+I\+D\+TH@{W\+I\+D\+TH}!znaki.\+c@{znaki.\+c}}
+\subsubsection{W\+I\+D\+TH}
+{\footnotesize\ttfamily \#define W\+I\+D\+TH~80}
+
+
+
+szerokosc terminala 
+
+\mbox{\label{znaki_8c_a37c2ea761899e801c043bb2d8751e9f6}} 
+\index{znaki.\+c@{znaki.\+c}!W\+O\+DA@{W\+O\+DA}}
+\index{W\+O\+DA@{W\+O\+DA}!znaki.\+c@{znaki.\+c}}
+\subsubsection{W\+O\+DA}
+{\footnotesize\ttfamily \#define W\+O\+DA~1}
+
+
+
+obiekt woda 
+
+\mbox{\label{znaki_8c_aed63eab25d4c1b644bc7a2fea5a50407}} 
+\index{znaki.\+c@{znaki.\+c}!W\+O\+D\+A\+\_\+\+N\+I\+E\+D\+O\+Z\+W\+O\+L\+O\+NA@{W\+O\+D\+A\+\_\+\+N\+I\+E\+D\+O\+Z\+W\+O\+L\+O\+NA}}
+\index{W\+O\+D\+A\+\_\+\+N\+I\+E\+D\+O\+Z\+W\+O\+L\+O\+NA@{W\+O\+D\+A\+\_\+\+N\+I\+E\+D\+O\+Z\+W\+O\+L\+O\+NA}!znaki.\+c@{znaki.\+c}}
+\subsubsection{W\+O\+D\+A\+\_\+\+N\+I\+E\+D\+O\+Z\+W\+O\+L\+O\+NA}
+{\footnotesize\ttfamily \#define W\+O\+D\+A\+\_\+\+N\+I\+E\+D\+O\+Z\+W\+O\+L\+O\+NA~7}
+
+
+
+wyglad wody na ktorej nie mozna postawic okretu 
+
+\mbox{\label{znaki_8c_af07b77cc72039219b28892d8cf0b991b}} 
+\index{znaki.\+c@{znaki.\+c}!Z\+A\+T\+O\+P\+I\+O\+NY@{Z\+A\+T\+O\+P\+I\+O\+NY}}
+\index{Z\+A\+T\+O\+P\+I\+O\+NY@{Z\+A\+T\+O\+P\+I\+O\+NY}!znaki.\+c@{znaki.\+c}}
+\subsubsection{Z\+A\+T\+O\+P\+I\+O\+NY}
+{\footnotesize\ttfamily \#define Z\+A\+T\+O\+P\+I\+O\+NY~5}
+
+
+
+obiekt statek zatopiony -\/ nieuzywany w tej wersji 
+
+
+
+\subsection{Function Documentation}
+\mbox{\label{znaki_8c_ad2249dca20181f9de74aa2293e733e05}} 
+\index{znaki.\+c@{znaki.\+c}!czytaj\+Klawisz@{czytaj\+Klawisz}}
+\index{czytaj\+Klawisz@{czytaj\+Klawisz}!znaki.\+c@{znaki.\+c}}
+\subsubsection{czytaj\+Klawisz()}
+{\footnotesize\ttfamily void czytaj\+Klawisz (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Funkcja czytaj\+Klawisz czeka na nacisniecie spacji aby wyjsc z gry. 
+
+\mbox{\label{znaki_8c_a472d54e5297c6dfea59903654de33ee8}} 
+\index{znaki.\+c@{znaki.\+c}!gra@{gra}}
+\index{gra@{gra}!znaki.\+c@{znaki.\+c}}
+\subsubsection{gra()}
+{\footnotesize\ttfamily void gra (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Funkcja gra wywoluje po kolei funkcje tura\+Gracza i tura\+AI az do trafienia wszystkich statkow przez gracza lub komputer. Na koniec wyswietla stosowny komunikat i wywoluje funkcje cztaj\+Klawisz. 
+
+\mbox{\label{znaki_8c_a7c96ca45f748c1ab1555bc6723b2fb37}} 
+\index{znaki.\+c@{znaki.\+c}!inicjalizuj\+Plansze@{inicjalizuj\+Plansze}}
+\index{inicjalizuj\+Plansze@{inicjalizuj\+Plansze}!znaki.\+c@{znaki.\+c}}
+\subsubsection{inicjalizuj\+Plansze()}
+{\footnotesize\ttfamily void inicjalizuj\+Plansze (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Funkcja inicjalizuj\+Plansze wypelnia tablice danych gracza i komputera woda. 
+
+\mbox{\label{znaki_8c_ae66f6b31b5ad750f1fe042a706a4e3d4}} 
+\index{znaki.\+c@{znaki.\+c}!main@{main}}
+\index{main@{main}!znaki.\+c@{znaki.\+c}}
+\subsubsection{main()}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Funkcja glowna gry. 
+
+\mbox{\label{znaki_8c_af1710c030632f8fdbee887e01b37a274}} 
+\index{znaki.\+c@{znaki.\+c}!odswiez\+Lewa\+Plansze@{odswiez\+Lewa\+Plansze}}
+\index{odswiez\+Lewa\+Plansze@{odswiez\+Lewa\+Plansze}!znaki.\+c@{znaki.\+c}}
+\subsubsection{odswiez\+Lewa\+Plansze()}
+{\footnotesize\ttfamily void odswiez\+Lewa\+Plansze (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Funkcja odswiez\+Lewa\+Plansze wywoluje funkcje odswiez\+Pole dla kazdego pola lewj planszy. 
+
+\mbox{\label{znaki_8c_afcec389b16684f96ae1d3f27a43944f9}} 
+\index{znaki.\+c@{znaki.\+c}!odswiez\+Pole@{odswiez\+Pole}}
+\index{odswiez\+Pole@{odswiez\+Pole}!znaki.\+c@{znaki.\+c}}
+\subsubsection{odswiez\+Pole()}
+{\footnotesize\ttfamily void odswiez\+Pole (\begin{DoxyParamCaption}\item[{int}]{x\+\_\+curs,  }\item[{int}]{y\+\_\+curs }\end{DoxyParamCaption})}
+
+Funkcja odswiez\+Pole rysuje pojedyncze pole na planszy zgodnie z zawartoscia tabeli danych. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em x\+\_\+curs} & wspolrzedna x polozenia kursora \\
+\hline
+\mbox{\tt in}  & {\em y\+\_\+curs} & wspolrzedna y polozenia kursora \\
+\hline
+\end{DoxyParams}
+\mbox{\label{znaki_8c_ae50120b5b1aa42d55b0f251bcae781c7}} 
+\index{znaki.\+c@{znaki.\+c}!ruch\+Kursora@{ruch\+Kursora}}
+\index{ruch\+Kursora@{ruch\+Kursora}!znaki.\+c@{znaki.\+c}}
+\subsubsection{ruch\+Kursora()}
+{\footnotesize\ttfamily void ruch\+Kursora (\begin{DoxyParamCaption}\item[{int}]{key }\end{DoxyParamCaption})}
+
+Funkcja ruch\+Kursora obsluguje ruch kursora po naciskaniu strzalek na klawiaturze. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em key} & wartosc liczbowa nacisnietego klawisza. \\
+\hline
+\end{DoxyParams}
+\mbox{\label{znaki_8c_a2f8b282f9f98c0b4c7988e0238ef35a2}} 
+\index{znaki.\+c@{znaki.\+c}!rysuj\+Plansze@{rysuj\+Plansze}}
+\index{rysuj\+Plansze@{rysuj\+Plansze}!znaki.\+c@{znaki.\+c}}
+\subsubsection{rysuj\+Plansze()}
+{\footnotesize\ttfamily void rysuj\+Plansze (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Funkcja rysuj\+Plansze rysuje na ekranie plansze z ramkami, literami i cyframi i wypelnia je woda. 
+
+\mbox{\label{znaki_8c_a279d645e79f00a0ee810444b9364f7fe}} 
+\index{znaki.\+c@{znaki.\+c}!sprawdz\+Miejsce@{sprawdz\+Miejsce}}
+\index{sprawdz\+Miejsce@{sprawdz\+Miejsce}!znaki.\+c@{znaki.\+c}}
+\subsubsection{sprawdz\+Miejsce()}
+{\footnotesize\ttfamily int sprawdz\+Miejsce (\begin{DoxyParamCaption}\item[{int}]{x\+\_\+curs,  }\item[{int}]{y\+\_\+curs }\end{DoxyParamCaption})}
+
+Funkcja sprawdz\+Miejsce sprawdza czy dane pole tablicy ma wartosc czy\+Mozna\+Ustawic\+Statek == dozwolony. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em x\+\_\+curs} & wspolrzedna x polozenia kursora \\
+\hline
+\mbox{\tt in}  & {\em y\+\_\+curs} & wspolrzedna y polozenia kursora \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+wartosc 1 jezeli ruch jest legalny, i -\/1 jezeli nie jest. 
+\end{DoxyReturn}
+\mbox{\label{znaki_8c_a781d9bcd6f3698d57ae59128ace1145e}} 
+\index{znaki.\+c@{znaki.\+c}!sprawdz\+Miejsce\+AI@{sprawdz\+Miejsce\+AI}}
+\index{sprawdz\+Miejsce\+AI@{sprawdz\+Miejsce\+AI}!znaki.\+c@{znaki.\+c}}
+\subsubsection{sprawdz\+Miejsce\+A\+I()}
+{\footnotesize\ttfamily int sprawdz\+Miejsce\+AI (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y }\end{DoxyParamCaption})}
+
+Funkcja sprawdz\+Miejsce\+AI sprawdza czy dane pole tablicy ma wartosc czy\+Mozna\+Ustawic\+Statek == dozwolony. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em x} & wspolrzedna x trafienia komputera \\
+\hline
+\mbox{\tt in}  & {\em y} & wspolrzedna y trafienia komputera \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+wartosc 1 jezeli ruch jest legalny, i -\/1 jezeli nie jest. 
+\end{DoxyReturn}
+\mbox{\label{znaki_8c_a27fe73b913ddcab7e7f99e8b7ecb047f}} 
+\index{znaki.\+c@{znaki.\+c}!strzal\+AI@{strzal\+AI}}
+\index{strzal\+AI@{strzal\+AI}!znaki.\+c@{znaki.\+c}}
+\subsubsection{strzal\+A\+I()}
+{\footnotesize\ttfamily int strzal\+AI (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Funckja strzal\+AI wybiera za pomoca generatora liczb pseudolosowych pole do trafienia przez komputer, sprawdza jaki jest stan trafionego pola, zmienia ten stan w odpowiedni sposob i wywoluje funkcje odswiez\+Pole. Wypisuje na gorze ekranu liczbe pozostalych pol do trafienia. Funkcja zmienia zmienna globalna zwyciestwo na -\/1 jezeli zostaly trafione wszystkie okrety gracza. \begin{DoxyReturn}{Returns}
+wartosc 0 jezeli zostal trafiony statek lub uprzednio trafione pole, i 1 jezeli komputer spudlowal. 
+\end{DoxyReturn}
+\mbox{\label{znaki_8c_a162fcf6ca758d2ed991b188fcdcdf09f}} 
+\index{znaki.\+c@{znaki.\+c}!strzal\+Gracza@{strzal\+Gracza}}
+\index{strzal\+Gracza@{strzal\+Gracza}!znaki.\+c@{znaki.\+c}}
+\subsubsection{strzal\+Gracza()}
+{\footnotesize\ttfamily int strzal\+Gracza (\begin{DoxyParamCaption}\item[{int}]{x\+\_\+curs,  }\item[{int}]{y\+\_\+curs }\end{DoxyParamCaption})}
+
+Funckja strzal\+Gracza sprawdza jaki jest stan trafionego pola, zmienia ten stan w odpowiedni sposob i wywoluje funkcje odswiez\+Pole. Wypisuje na gorze ekranu liczbe pozostalych pol do trafienia. Funkcja zmienia zmienna globalna zwyciestwo na 1 jezeli zostaly trafione wszystkie okrety komputera. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em x\+\_\+curs} & wspolrzedna x polozenia kursora \\
+\hline
+\mbox{\tt in}  & {\em y\+\_\+curs} & wspolrzedna y polozenia kursora \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+wartosc 1 jezeli zostal trafiony statek lub uprzednio trafione pole, i 0 jezeli gracz spudlowal. 
+\end{DoxyReturn}
+\mbox{\label{znaki_8c_a5a1dc76a16362d5314f0c1b1f432314c}} 
+\index{znaki.\+c@{znaki.\+c}!tura\+AI@{tura\+AI}}
+\index{tura\+AI@{tura\+AI}!znaki.\+c@{znaki.\+c}}
+\subsubsection{tura\+A\+I()}
+{\footnotesize\ttfamily void tura\+AI (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Funkcja tura\+AI wywoluje funkcje strzal\+AI tak dlugo jak trafiony zostaje statek. 
+
+\mbox{\label{znaki_8c_a26092db3483f37d96a0cafcccab0d984}} 
+\index{znaki.\+c@{znaki.\+c}!tura\+Gracza@{tura\+Gracza}}
+\index{tura\+Gracza@{tura\+Gracza}!znaki.\+c@{znaki.\+c}}
+\subsubsection{tura\+Gracza()}
+{\footnotesize\ttfamily void tura\+Gracza (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Funcja tura\+Gracza obsluguje ruch kursora przy ataku, wywoluje funkcje strzal\+Gracza po nacisnieciu spacji tak dlugo jak trafiany jest statek lub uprzednio trafione pole oraz pozwala na zaznaczanie pol, ktore gracz uwaza za pewne pudla X-\/em i rysowanie wody w wypadku pomylki. 
+
+\mbox{\label{znaki_8c_a9bc63fb9def24965459fdc410d0f02bb}} 
+\index{znaki.\+c@{znaki.\+c}!ustaw\+Kolory@{ustaw\+Kolory}}
+\index{ustaw\+Kolory@{ustaw\+Kolory}!znaki.\+c@{znaki.\+c}}
+\subsubsection{ustaw\+Kolory()}
+{\footnotesize\ttfamily void ustaw\+Kolory (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Funkcja ustaw\+Kolory ustawia pary kolorow w ncurses dla roznych pol. 
+
+\mbox{\label{znaki_8c_a73db6bc48d8c52e19f67463ae4b6b0e7}} 
+\index{znaki.\+c@{znaki.\+c}!ustaw\+Okret@{ustaw\+Okret}}
+\index{ustaw\+Okret@{ustaw\+Okret}!znaki.\+c@{znaki.\+c}}
+\subsubsection{ustaw\+Okret()}
+{\footnotesize\ttfamily void ustaw\+Okret (\begin{DoxyParamCaption}\item[{int}]{wielkosc\+Okretu }\end{DoxyParamCaption})}
+
+Funkcja ustaw\+Okret probuje ustawic na planszy okret danej wielkosci w miejscu okreslonym przez gracza. Aby sprawdzic legalnosc ruchu wywoluje funkcje sprawdz\+Miejsce, a nastepnie wywoluje funkcje zmien\+Stan dla okreslonych pol. Na koniec wywoluje funkcje odswiez\+Lewa\+Plansze. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em wielkosc\+Okretu} & dlugosc okretu rowna 1, 2, 3 lub 4 pola. \\
+\hline
+\end{DoxyParams}
+\mbox{\label{znaki_8c_a314ab8e753dc1c989bc9b21668d0bd1f}} 
+\index{znaki.\+c@{znaki.\+c}!ustaw\+Okret\+AI@{ustaw\+Okret\+AI}}
+\index{ustaw\+Okret\+AI@{ustaw\+Okret\+AI}!znaki.\+c@{znaki.\+c}}
+\subsubsection{ustaw\+Okret\+A\+I()}
+{\footnotesize\ttfamily void ustaw\+Okret\+AI (\begin{DoxyParamCaption}\item[{int}]{wielkosc\+Okretu }\end{DoxyParamCaption})}
+
+Funkcja ustaw\+Okret\+AI probuje ustawic na planszy okret danej wielkosci w miejscu wylosowanym przez generator liczb pseudolosowych. Aby sprawdzic legalnosc ruchu wywoluje funkcje sprawdz\+Miejsce\+AI, a nastepnie wywoluje funkcje zmien\+Stan\+AI dla okreslonych pol. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em wielkosc\+Okretu} & dlugosc okretu rowna 1, 2, 3 lub 4 pola. \\
+\hline
+\end{DoxyParams}
+\mbox{\label{znaki_8c_a6769114ed130274a2f47dea12523df77}} 
+\index{znaki.\+c@{znaki.\+c}!ustaw\+Okrety\+AI@{ustaw\+Okrety\+AI}}
+\index{ustaw\+Okrety\+AI@{ustaw\+Okrety\+AI}!znaki.\+c@{znaki.\+c}}
+\subsubsection{ustaw\+Okrety\+A\+I()}
+{\footnotesize\ttfamily void ustaw\+Okrety\+AI (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Funkcja ustaw\+Okrety\+AI wywoluje funkcje ustaw\+Okret\+AI dla czteromasztowca, dwoch trojmasztowcow, trzech dwumasztowcow i czterech jednomasztowcow komputera. 
+
+\mbox{\label{znaki_8c_a4076458d0a6a28ae914d9ed429129ec6}} 
+\index{znaki.\+c@{znaki.\+c}!ustaw\+Okrety\+Gracza@{ustaw\+Okrety\+Gracza}}
+\index{ustaw\+Okrety\+Gracza@{ustaw\+Okrety\+Gracza}!znaki.\+c@{znaki.\+c}}
+\subsubsection{ustaw\+Okrety\+Gracza()}
+{\footnotesize\ttfamily void ustaw\+Okrety\+Gracza (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Funkcja ustaw\+Okrety\+Gracza wywoluje funkcje ustaw\+Okret dla czteromasztowca, dwoch trojmasztowcow, trzech dwumasztowcow i czterech jednomasztowcow gracza. 
+
+\mbox{\label{znaki_8c_a5075930681628e334abe78a15221fa56}} 
+\index{znaki.\+c@{znaki.\+c}!wyswietl\+Sciage@{wyswietl\+Sciage}}
+\index{wyswietl\+Sciage@{wyswietl\+Sciage}!znaki.\+c@{znaki.\+c}}
+\subsubsection{wyswietl\+Sciage()}
+{\footnotesize\ttfamily void wyswietl\+Sciage (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Funkcja wyswietl\+Sciage wypisuje na dole ekranu przydatne informacje. 
+
+\mbox{\label{znaki_8c_a541a3103b5eb12b2c413c09a684f238c}} 
+\index{znaki.\+c@{znaki.\+c}!zmien\+Stan@{zmien\+Stan}}
+\index{zmien\+Stan@{zmien\+Stan}!znaki.\+c@{znaki.\+c}}
+\subsubsection{zmien\+Stan()}
+{\footnotesize\ttfamily void zmien\+Stan (\begin{DoxyParamCaption}\item[{int}]{x\+\_\+curs,  }\item[{int}]{y\+\_\+curs,  }\item[{int}]{stan }\end{DoxyParamCaption})}
+
+Funkcja zmien\+Stan przyporzadkowuje polu odpowiedni obiekt\+: statek, statek ustawiany, statek trafiony, wode lub pudlo i ustawia legalnosc postawienia na polu statku. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em x\+\_\+curs} & wspolrzedna x polozenia kursora \\
+\hline
+\mbox{\tt in}  & {\em y\+\_\+curs} & wspolrzedna y polozenia kursora \\
+\hline
+\mbox{\tt in}  & {\em stan} & docelowy stan pola \\
+\hline
+\end{DoxyParams}
+\mbox{\label{znaki_8c_ae097d03b23d6c4e127a8adfe45262c53}} 
+\index{znaki.\+c@{znaki.\+c}!zmien\+Stan\+AI@{zmien\+Stan\+AI}}
+\index{zmien\+Stan\+AI@{zmien\+Stan\+AI}!znaki.\+c@{znaki.\+c}}
+\subsubsection{zmien\+Stan\+A\+I()}
+{\footnotesize\ttfamily void zmien\+Stan\+AI (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{stan }\end{DoxyParamCaption})}
+
+Funkcja zmien\+Stan\+AI przyporzadkowuje polu odpowiedni obiekt\+: statek, statek ustawiany, statek trafiony, wode lub pudlo i ustawia legalnosc postawienia na polu statku. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em x} & wspolrzedna x trafienia komputera \\
+\hline
+\mbox{\tt in}  & {\em y} & wspolrzedna y trafienia komputera \\
+\hline
+\mbox{\tt in}  & {\em stan} & docelowy stan pola \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Variable Documentation}
+\mbox{\label{znaki_8c_afabe3aff37b589df7c2e3a2d82e70f58}} 
+\index{znaki.\+c@{znaki.\+c}!kratki\+Okretow\+AI@{kratki\+Okretow\+AI}}
+\index{kratki\+Okretow\+AI@{kratki\+Okretow\+AI}!znaki.\+c@{znaki.\+c}}
+\subsubsection{kratki\+Okretow\+AI}
+{\footnotesize\ttfamily int kratki\+Okretow\+AI}
+
+
+
+liczba pol na ktorych sa okrety komputera. 
+
+\mbox{\label{znaki_8c_a4fcac5248e9a132f00cd666977e52fcb}} 
+\index{znaki.\+c@{znaki.\+c}!kratki\+Okretow\+Gracza@{kratki\+Okretow\+Gracza}}
+\index{kratki\+Okretow\+Gracza@{kratki\+Okretow\+Gracza}!znaki.\+c@{znaki.\+c}}
+\subsubsection{kratki\+Okretow\+Gracza}
+{\footnotesize\ttfamily int kratki\+Okretow\+Gracza}
+
+
+
+liczba pol na ktorych sa okrety gracza. 
+
+\mbox{\label{znaki_8c_a1f234b351363f40911dd7bc7b8e4ae5c}} 
+\index{znaki.\+c@{znaki.\+c}!plansza\+AI@{plansza\+AI}}
+\index{plansza\+AI@{plansza\+AI}!znaki.\+c@{znaki.\+c}}
+\subsubsection{plansza\+AI}
+{\footnotesize\ttfamily struct \textbf{ Pole\+Planszy} plansza\+AI[10][10]}
+
+
+
+tablica dwuwymiarowa pol planczy komputera 
+
+\mbox{\label{znaki_8c_a242928f362000aa6cb465df03482b58f}} 
+\index{znaki.\+c@{znaki.\+c}!plansza\+Gracza@{plansza\+Gracza}}
+\index{plansza\+Gracza@{plansza\+Gracza}!znaki.\+c@{znaki.\+c}}
+\subsubsection{plansza\+Gracza}
+{\footnotesize\ttfamily struct \textbf{ Pole\+Planszy} plansza\+Gracza[10][10]}
+
+
+
+tablica dwuwymiarowa pol planczy gracza 
+
+\mbox{\label{znaki_8c_a13fe9210eae1784cee7b005356ff129c}} 
+\index{znaki.\+c@{znaki.\+c}!x\+\_\+cur@{x\+\_\+cur}}
+\index{x\+\_\+cur@{x\+\_\+cur}!znaki.\+c@{znaki.\+c}}
+\subsubsection{x\+\_\+cur}
+{\footnotesize\ttfamily int x\+\_\+cur}
+
+
+
+wspolrzedna x kursora. 
+
+\mbox{\label{znaki_8c_a353801f530f676971e5bd797371e7164}} 
+\index{znaki.\+c@{znaki.\+c}!y\+\_\+cur@{y\+\_\+cur}}
+\index{y\+\_\+cur@{y\+\_\+cur}!znaki.\+c@{znaki.\+c}}
+\subsubsection{y\+\_\+cur}
+{\footnotesize\ttfamily int y\+\_\+cur}
+
+
+
+wspolrzedna y kursora. 
+
+\mbox{\label{znaki_8c_a6ab179ba1661be3bc6c657dabae93539}} 
+\index{znaki.\+c@{znaki.\+c}!zwyciestwo@{zwyciestwo}}
+\index{zwyciestwo@{zwyciestwo}!znaki.\+c@{znaki.\+c}}
+\subsubsection{zwyciestwo}
+{\footnotesize\ttfamily int zwyciestwo}
+
+
+
+wartosc 0 dla trwajacej gry, 1 po zwyciestwie gracza i -\/1 po zwyciestwie komputera. 
+
