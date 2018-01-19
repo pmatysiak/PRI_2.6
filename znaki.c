@@ -3,7 +3,7 @@
 #include <time.h>
 #include <ncurses.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 
 #define WIDTH 80
@@ -28,6 +28,7 @@
 #define WODA_NIEDOZWOLONA 7
 #define KURSOR 8
 
+void ustawKolory();
 void odswiezLewaPlansze();
 void rysujPlansze();
 void zmienStanDebug();
@@ -47,6 +48,10 @@ void turaGracza();
 void turaAI();
 int strzalGracza();
 int strzalAI();
+int sprawdzMiejsceAI();
+void ustawOkretyAI();
+void ustawOkretAI();
+void zmienStanAI();
 
 struct PolePlanszy {
 	enum stan {
@@ -100,14 +105,7 @@ int main()
 
 	start_color();
 
-	init_pair(WODA, COLOR_CYAN, COLOR_BLUE);
-	init_pair(WODA_NIEDOZWOLONA, COLOR_MAGENTA, COLOR_BLUE);
-	init_pair(STATEK_USTAWIANY, COLOR_MAGENTA, COLOR_YELLOW);
-	init_pair(STATEK, COLOR_MAGENTA, COLOR_GREEN);
-	init_pair(TRAFIONY, COLOR_YELLOW, COLOR_RED);
-	init_pair(ZATOPIONY, COLOR_RED, COLOR_BLACK);
-	init_pair(PUDLO, COLOR_BLUE, COLOR_BLACK);
-	init_pair(KURSOR, COLOR_BLACK, COLOR_GREEN);
+	ustawKolory();
 
 	raw();
 	noecho();
@@ -142,17 +140,33 @@ int main()
 	refresh();
 	odswiezLewaPlansze();
 
-
+	int seed;
+	time_t czas;
+    seed = time(&czas);
+    srand(seed);
 
 	ustawOkretyGracza();
+	ustawOkretyAI();
 
+	//rysujPlansze();
 
-	rysujPodgladOkretow();
+	//rysujPodgladOkretow();
 
 	gra();
 	
 	endwin();
 	return 0;
+}
+
+void ustawKolory() {
+	init_pair(WODA, COLOR_CYAN, COLOR_BLUE);
+	init_pair(WODA_NIEDOZWOLONA, COLOR_MAGENTA, COLOR_BLUE);
+	init_pair(STATEK_USTAWIANY, COLOR_MAGENTA, COLOR_YELLOW);
+	init_pair(STATEK, COLOR_MAGENTA, COLOR_GREEN);
+	init_pair(TRAFIONY, COLOR_YELLOW, COLOR_RED);
+	init_pair(ZATOPIONY, COLOR_RED, COLOR_BLACK);
+	init_pair(PUDLO, COLOR_BLUE, COLOR_BLACK);
+	init_pair(KURSOR, COLOR_BLACK, COLOR_GREEN);
 }
 
 void rysujPlansze() {
@@ -256,10 +270,11 @@ void rysujPlansze() {
 }
 
 void odswiezLewaPlansze() {
-	int x, y, plansza, cyferka;
+	int x, y;
+	//int cyferka;
 	char pole;
-	y = x = plansza = 0;
-	cyferka = 1;
+	y = x  = 0;
+	//cyferka = 1;
 	
 	//rysuj wode na srodku
 
@@ -300,8 +315,8 @@ void zmienStanDebug(int x_curs, int y_curs) {
 	x = x_curs/2 - 7;
 	y = y_curs - 6;
 
-	mvprintw (0, WIDTH-21, "zmiana x = %c, y = %d ", x+64, y);
-	mvprintw (1, WIDTH-18, "tab x = %d, y = %d ", x-1, y-1);
+	//mvprintw (0, WIDTH-21, "zmiana x = %c, y = %d ", x+64, y);
+	//mvprintw (1, WIDTH-18, "tab x = %d, y = %d ", x-1, y-1);
 
 	switch ( planszaGracza[x-1][y-1].obiekt ) {
 		case woda:
@@ -323,7 +338,7 @@ void zmienStanDebug(int x_curs, int y_curs) {
 			planszaGracza[x-1][y-1].obiekt = woda;
 			break;
 	}
-	mvprintw (0, WIDTH-40, "status: %d", planszaGracza[x-1][y-1].obiekt);
+//	mvprintw (0, WIDTH-40, "status: %d", planszaGracza[x-1][y-1].obiekt);
 
 }
 
@@ -334,8 +349,8 @@ void zmienStan(int x_curs, int y_curs, int stan) {
 	x = x_curs/2 - 7;
 	y = y_curs - 6;
 	if (x > 0 && x <= 10 && y > 0 && y <= 10) {
-		mvprintw (0, WIDTH-21, "zmiana x = %c, y = %d ", x+64, y);
-		mvprintw (1, WIDTH-18, "tab x = %d, y = %d ", x-1, y-1);
+	//	mvprintw (0, WIDTH-21, "zmiana x = %c, y = %d ", x+64, y);
+	//	mvprintw (1, WIDTH-18, "tab x = %d, y = %d ", x-1, y-1);
 
 		switch ( stan ) {
 			case WODA:
@@ -362,8 +377,8 @@ void zmienStan(int x_curs, int y_curs, int stan) {
 				planszaGracza[x-1][y-1].czyMoznaUstawicStatek = niedozwolony;
 				break;
 		}
-		mvprintw (0, WIDTH-40, "status: %d", planszaGracza[x-1][y-1].obiekt);
-		mvprintw (1, WIDTH-40, "dozwol: %d", planszaGracza[x-1][y-1].czyMoznaUstawicStatek);
+	//	mvprintw (0, WIDTH-40, "status: %d", planszaGracza[x-1][y-1].obiekt);
+	//	mvprintw (1, WIDTH-40, "dozwol: %d", planszaGracza[x-1][y-1].czyMoznaUstawicStatek);
 	}
 }
 
@@ -493,48 +508,48 @@ void ruchKursora(int key) {
 
 void wyswietlSciage() {
 	int szerokosc_pojedynczej_sciagi;
-	szerokosc_pojedynczej_sciagi = 12;
+	szerokosc_pojedynczej_sciagi = 14;
 
 	attron(COLOR_PAIR(WODA));
-	mvprintw(HEIGHT-3, 0*szerokosc_pojedynczej_sciagi, "~");
+	mvprintw(HEIGHT-2, 0*szerokosc_pojedynczej_sciagi, "~");
 	attroff(COLOR_PAIR(WODA));
 
 	attron(COLOR_PAIR(WODA_NIEDOZWOLONA));
-	mvprintw(HEIGHT-3, 1*szerokosc_pojedynczej_sciagi, "-");
+	mvprintw(HEIGHT-2, 1*szerokosc_pojedynczej_sciagi, "-");
 	attroff(COLOR_PAIR(WODA_NIEDOZWOLONA));
 
 	attron(COLOR_PAIR(STATEK_USTAWIANY));
-	mvprintw(HEIGHT-3, 2*szerokosc_pojedynczej_sciagi, "U");
+	mvprintw(HEIGHT-2, 2*szerokosc_pojedynczej_sciagi, "U");
 	attroff(COLOR_PAIR(STATEK_USTAWIANY));
 
 	attron(COLOR_PAIR(STATEK));
-	mvprintw(HEIGHT-3, 3*szerokosc_pojedynczej_sciagi, "S");
+	mvprintw(HEIGHT-2, 3*szerokosc_pojedynczej_sciagi, "S");
 	attroff(COLOR_PAIR(STATEK));
 
 	attron(COLOR_PAIR(TRAFIONY));
-	mvprintw(HEIGHT-3, 4*szerokosc_pojedynczej_sciagi, "*");
+	mvprintw(HEIGHT-2, 4*szerokosc_pojedynczej_sciagi, "*");
 	attroff(COLOR_PAIR(TRAFIONY));
 
-	attron(COLOR_PAIR(ZATOPIONY));
-	mvprintw(HEIGHT-3, 5*szerokosc_pojedynczej_sciagi, "#");
-	attroff(COLOR_PAIR(ZATOPIONY));
+//	attron(COLOR_PAIR(ZATOPIONY));
+//	mvprintw(HEIGHT-3, 5*szerokosc_pojedynczej_sciagi, "#");
+//	attroff(COLOR_PAIR(ZATOPIONY));
 
 	attron(COLOR_PAIR(PUDLO));
-	mvprintw(HEIGHT-3, 6*szerokosc_pojedynczej_sciagi, "O");
+	mvprintw(HEIGHT-2, 5*szerokosc_pojedynczej_sciagi, "O");
 	attroff(COLOR_PAIR(PUDLO));
 
 	attron(A_REVERSE);
 
-	mvprintw(HEIGHT-3, 1 + 0*szerokosc_pojedynczej_sciagi, " woda      ");
-	mvprintw(HEIGHT-3, 1 + 1*szerokosc_pojedynczej_sciagi, " zajete    ");
-	mvprintw(HEIGHT-3, 1 + 2*szerokosc_pojedynczej_sciagi, " ustawiany ");
-	mvprintw(HEIGHT-3, 1 + 3*szerokosc_pojedynczej_sciagi, " statek    ");
-	mvprintw(HEIGHT-3, 1 + 4*szerokosc_pojedynczej_sciagi, " trafiony  ");
-	mvprintw(HEIGHT-3, 1 + 5*szerokosc_pojedynczej_sciagi, " zatopiony ");
-	mvprintw(HEIGHT-3, 1 + 6*szerokosc_pojedynczej_sciagi, " pudlo ");
+	mvprintw(HEIGHT-2, 1 + 0*szerokosc_pojedynczej_sciagi, " woda        ");
+	mvprintw(HEIGHT-2, 1 + 1*szerokosc_pojedynczej_sciagi, " zajete      ");
+	mvprintw(HEIGHT-2, 1 + 2*szerokosc_pojedynczej_sciagi, " ustawiany   ");
+	mvprintw(HEIGHT-2, 1 + 3*szerokosc_pojedynczej_sciagi, " statek      ");
+	mvprintw(HEIGHT-2, 1 + 4*szerokosc_pojedynczej_sciagi, " trafiony    ");
+//	mvprintw(HEIGHT-2, 1 + 5*szerokosc_pojedynczej_sciagi, " zatopiony ");
+	mvprintw(HEIGHT-2, 1 + 5*szerokosc_pojedynczej_sciagi, " pudlo   ");
 
-	mvprintw(HEIGHT-2, 0, "Uzyj strzalek do poruszania kursorem. Spacja zaznacza kratke. Q konczy program. ");
-	mvprintw(HEIGHT-1, 0, "F5 resetuje plansze. 1, 2, 3, 4, 5 zaznaczaja testowo.                          ");
+	mvprintw(HEIGHT-1, 0, "Uzyj strzalek do poruszania kursorem. Spacja zatwierdza. R obraca statek.       ");
+	//mvprintw(HEIGHT, 0, "F5 resetuje plansze. 1, 2, 3, 4, 5 zaznaczaja testowo.                          ");
 	
 	attroff(A_REVERSE);
 }
@@ -755,6 +770,9 @@ void czytajKlawisz() {
 		if ( key == KEY_UP || key == KEY_DOWN || key == KEY_LEFT || key == KEY_RIGHT ) {
 			ruchKursora(key);
 		}
+		else if (zwyciestwo != 0) {
+			break;
+		}
 		else
 		switch ( key ) {
 			
@@ -788,7 +806,11 @@ void czytajKlawisz() {
 
 
 	#endif
-					
+			case 'x':
+				attron(COLOR_PAIR(WODA_NIEDOZWOLONA));
+				printw("-");						//zaznaczanie woda niedozwolona
+				attroff(COLOR_PAIR(WODA_NIEDOZWOLONA));
+				break;		
 			case ' ':
 				//planszaGracza[x_cur][y_cur].obiekt = statek;
 				zmienStanDebug(x_cur, y_cur);			//zmiana stanu
@@ -796,10 +818,10 @@ void czytajKlawisz() {
 				odswiezPole(x_cur, y_cur);
 				//odswiezLewaPlansze();
 				break;			
-			case KEY_F(5):								//reset planszy
-				inicjalizujPlansze();
-				rysujPlansze();
-				break;
+	//		case KEY_F(5):								//reset planszy
+	//			inicjalizujPlansze();
+	//			rysujPlansze();
+	//			break;
 		}
 		key = 0;
 
@@ -819,6 +841,8 @@ void inicjalizujPlansze() {
 			planszaAI[iter_x][iter_y].czyMoznaUstawicStatek = dozwolony;
 		}
 	}
+	/*
+
 	planszaAI[4][0].obiekt = statek;
 	planszaAI[4][1].obiekt = statek;
 	planszaAI[4][2].obiekt = statek;
@@ -839,6 +863,7 @@ void inicjalizujPlansze() {
 	planszaAI[5][7].obiekt = statek;
 	planszaAI[5][8].obiekt = statek;
 	planszaAI[5][9].obiekt = statek;
+	*/
 }
 
 void ustawOkretyGracza() {
@@ -1229,7 +1254,7 @@ int sprawdzMiejsce(int x_curs, int y_curs) {
 	else  if (x_curs > 42 ) {
 		x = (x_curs-1)/2 - 20;
 	}
-	mvprintw(WIDTH-40, 2, "Sprawdzam pole x= %d, y= %d", x, y);
+	mvprintw(WIDTH-40, 3, "Sprawdzam pole x= %d, y= %d", x, y);
 
 	if ( planszaGracza[x-1][y-1].czyMoznaUstawicStatek == dozwolony ) {
 		return 1;
@@ -1241,6 +1266,7 @@ int sprawdzMiejsce(int x_curs, int y_curs) {
 
 void gra() {
 
+	
 	zwyciestwo = 0;											// ZMIEN NA 0
 
 	x_cur = STATUS_X_MIN;
@@ -1267,6 +1293,7 @@ void gra() {
 		mvprintw(14,17, "                                             ");
 		mvprintw(15,17, "                                             ");
 		mvprintw(16,17, "                                             ");
+		curs_set(0);
 	} else {
 		mvprintw(7,17,  "                                             ");
 		mvprintw(8,17,  "                                             ");
@@ -1278,6 +1305,7 @@ void gra() {
 		mvprintw(14,17, "                                             ");
 		mvprintw(15,17, "                                             ");
 		mvprintw(16,17, "                                             ");
+		curs_set(0);
 	}
 	czytajKlawisz();
 }
@@ -1326,8 +1354,12 @@ void turaGracza() {
 					koniecTury = 1;
 					break;			
 				}
+				break;
 			case 'm':
 				zwyciestwo = 1;
+				break;
+			case 'n':
+				zwyciestwo = -1;
 				break;
 		}
 		
@@ -1355,11 +1387,11 @@ int strzalGracza(int x_curs, int y_curs) {
 		odswiezPole(x_curs, y_curs);
 		return 0;
 	}
-	if (planszaAI[x_tab][y_tab].obiekt == statek ) {
+	else if (planszaAI[x_tab][y_tab].obiekt == statek ) {
 		planszaAI[x_tab][y_tab].obiekt = trafiony;
 		odswiezPole(x_curs, y_curs);
 		kratkiOkretowAI--;
-		mvprintw(8,70,"%d ", kratkiOkretowAI);
+		mvprintw(2,42,"Pozostalo %d pol okretow.  ", kratkiOkretowAI);
 		if (kratkiOkretowAI < 1) {
 			zwyciestwo = 1;
 		}
@@ -1367,29 +1399,41 @@ int strzalGracza(int x_curs, int y_curs) {
 		
 
 	}
-	if (planszaAI[x_tab][y_tab].obiekt == trafiony) {
+	else if (planszaAI[x_tab][y_tab].obiekt == trafiony) {
 		return 1;
 	}
+	else if (planszaAI[x_tab][y_tab].obiekt == pudlo) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+
 }
 
 int strzalAI() {
-	int zarodek, x_traf, y_traf;
-    time_t tt;
-    zarodek = time(&tt) + kratkiOkretowGracza;
-    srand(zarodek);
-
+	int x_traf, y_traf;
+    
     x_traf = rand()%10;
     y_traf = rand()%10;
 
 	if (planszaGracza[x_traf][y_traf].obiekt == woda ) {
 		planszaGracza[x_traf][y_traf].obiekt = pudlo;
 		odswiezPole((x_traf*2)+17, y_traf+7);
+		move(y_cur, x_cur);
+		refresh();
 		return 1;
 	}
 	else if (planszaGracza[x_traf][y_traf].obiekt == statek ) {
 		planszaGracza[x_traf][y_traf].obiekt = trafiony;
 		--kratkiOkretowGracza;
 		odswiezPole((x_traf*2)+17, y_traf+7);
+		mvprintw(2,13,"Pozostalo %d pol okretow. ", kratkiOkretowGracza);
+		if (kratkiOkretowGracza < 1) {
+			zwyciestwo = -1;
+		}
+		move(y_cur, x_cur);
+		refresh();
 		return 0;
 	}
 	else if (planszaGracza[x_traf][y_traf].obiekt == trafiony ) {
@@ -1399,5 +1443,209 @@ int strzalAI() {
 		return 0;
 	} else {
 		return 1;
+	}
+}
+
+int sprawdzMiejsceAI(int x, int y) {
+
+	if ( planszaAI[x][y].czyMoznaUstawicStatek == dozwolony ) {
+		return 1;
+	}
+	else {
+		return -1;
+	}
+}
+
+void ustawOkretyAI() {
+	int i;
+	ustawOkretAI(4);
+	for (i = 0; i < 2; ++i) {
+		ustawOkretAI(3);
+	}
+	for (i = 0; i < 3; ++i) {
+		ustawOkretAI(2);
+	}
+	for (i = 0; i < 4; ++i) {
+		ustawOkretAI(1);
+	}
+}
+
+void ustawOkretAI(int wielkoscOkretu) {
+	
+	int i;
+	int x, y;
+	int obrot;
+	int czyStatekOK;
+	czyStatekOK = 0;
+	switch (wielkoscOkretu) {
+		case 1:
+			do {
+				x = rand()%10;
+				y = rand()%10;
+				if ( sprawdzMiejsceAI(x, y) == 1) {
+					czyStatekOK = 1;
+					int xdelta;
+					int ydelta;
+					for (xdelta = (-1); xdelta <= 1; xdelta = xdelta + 1) {
+						for (ydelta = (-1); ydelta <=1; ++ydelta) {
+							zmienStanAI((x + xdelta), (y + ydelta), WODA_NIEDOZWOLONA);
+						}
+					}
+					zmienStanAI(x, y, STATEK);
+					break;
+				}
+			} while (czyStatekOK != 1);
+			break;
+		case 2:
+			do {
+				obrot = rand()%2;
+				if (obrot == 0) {
+					x = rand()%9;
+					y = rand()%10;
+					if (sprawdzMiejsceAI(x, y) == 1 && sprawdzMiejsceAI(x+1, y) == 1) {
+						czyStatekOK = 1;
+						int xdelta;
+						int ydelta;
+						for (xdelta = (-1); xdelta <= 2; xdelta = xdelta + 1) {
+							for (ydelta = (-1); ydelta <=1; ++ydelta) {
+								zmienStanAI((x + xdelta), (y + ydelta), WODA_NIEDOZWOLONA);
+							}
+						}
+						zmienStanAI(x, y, STATEK);
+						zmienStanAI(x + 1, y, STATEK);
+						break;
+					}
+				} else {
+					x = rand()%10;
+					y = rand()%9;
+					if (sprawdzMiejsceAI(x, y) == 1 && sprawdzMiejsceAI(x, y+1) == 1) {
+						czyStatekOK = 1;
+						int xdelta;
+						int ydelta;
+						for (xdelta = (-1); xdelta <= 1; xdelta = xdelta + 1) {
+							for (ydelta = (-1); ydelta <=2; ++ydelta) {
+								zmienStanAI((x + xdelta), (y + ydelta), WODA_NIEDOZWOLONA);
+							}
+						}
+						zmienStanAI(x, y, STATEK);
+						zmienStanAI(x, y + 1, STATEK);
+						break;
+					}
+				}
+			} while (czyStatekOK != 1);
+			break;
+		case 3:
+			do {
+				obrot = rand()%2;
+				if (obrot == 0) {
+					x = rand()%8;
+					y = rand()%10;
+					if (sprawdzMiejsceAI(x, y) == 1 && sprawdzMiejsceAI(x+1, y) == 1 && sprawdzMiejsceAI(x+2, y) == 1) {
+						czyStatekOK = 1;
+						int xdelta;
+						int ydelta;
+						for (xdelta = (-1); xdelta <= 3; xdelta = xdelta + 1) {
+							for (ydelta = (-1); ydelta <=1; ++ydelta) {
+								zmienStanAI((x + xdelta), (y + ydelta), WODA_NIEDOZWOLONA);
+							}
+						}
+						zmienStanAI(x, y, STATEK);
+						zmienStanAI(x + 1, y, STATEK);
+						zmienStanAI(x + 2, y, STATEK);
+						break;
+					}
+				} else {
+					x = rand()%10;
+					y = rand()%8;
+					if (sprawdzMiejsceAI(x, y) == 1 && sprawdzMiejsceAI(x, y+1) == 1 && sprawdzMiejsceAI(x, y+2) == 1) {
+						czyStatekOK = 1;
+						int xdelta;
+						int ydelta;
+						for (xdelta = (-1); xdelta <= 1; xdelta = xdelta + 1) {
+							for (ydelta = (-1); ydelta <=3; ++ydelta) {
+								zmienStanAI((x + xdelta), (y + ydelta), WODA_NIEDOZWOLONA);
+							}
+						}
+						zmienStanAI(x, y, STATEK);
+						zmienStanAI(x, y + 1, STATEK);
+						zmienStanAI(x, y + 2, STATEK);
+						break;
+					}
+				}
+			} while (czyStatekOK != 1);
+			break;
+		case 4:
+			do {
+				obrot = rand()%2;
+				if (obrot == 0) {
+					x = rand()%7;
+					y = rand()%10;
+					if (sprawdzMiejsceAI(x, y) == 1 && sprawdzMiejsceAI(x+1, y) == 1 && sprawdzMiejsceAI(x+2, y) == 1 && sprawdzMiejsceAI(x+3, y) == 1) {
+						czyStatekOK = 1;
+						int xdelta;
+						int ydelta;
+						for (xdelta = (-1); xdelta <= 4; xdelta = xdelta + 1) {
+							for (ydelta = (-1); ydelta <= 1; ++ydelta) {
+								zmienStanAI((x + xdelta), (y + ydelta), WODA_NIEDOZWOLONA);
+							}
+						}
+						zmienStanAI(x, y, STATEK);
+						zmienStanAI(x + 1, y, STATEK);
+						zmienStanAI(x + 2, y, STATEK);
+						zmienStanAI(x + 3, y, STATEK);
+						break;
+					}
+				} else {
+					x = rand()%10;
+					y = rand()%7;
+					if (sprawdzMiejsceAI(x, y) == 1 && sprawdzMiejsceAI(x, y+1) == 1 && sprawdzMiejsceAI(x, y+2) == 1 && sprawdzMiejsceAI(x, y+3) == 1) {
+						czyStatekOK = 1;
+						int xdelta;
+						int ydelta;
+						for (xdelta = (-1); xdelta <= 1; xdelta = xdelta + 1) {
+							for (ydelta = (-1); ydelta <= 4; ++ydelta) {
+								zmienStanAI((x + xdelta), (y + ydelta), WODA_NIEDOZWOLONA);
+							}
+						}
+						zmienStanAI(x, y, STATEK);
+						zmienStanAI(x, y + 1, STATEK);
+						zmienStanAI(x, y + 2, STATEK);
+						zmienStanAI(x, y + 3, STATEK);
+						break;
+					}
+				}
+			} while (czyStatekOK != 1);
+			break;
+	}
+}
+
+void zmienStanAI(int x, int y, int stan) {
+	if (x >= 0 && x < 10 && y >= 0 && y < 10) {
+		switch ( stan ) {
+			case WODA:
+				planszaAI[x][y].obiekt = woda;
+				break;
+			case STATEK_USTAWIANY:
+				planszaAI[x][y].obiekt = statek_ustawiany;
+				break;
+			case STATEK:
+				planszaAI[x][y].obiekt = statek;
+				planszaAI[x][y].czyMoznaUstawicStatek = niedozwolony;
+				break;
+			case TRAFIONY:
+				planszaAI[x][y].obiekt = trafiony;
+				break;
+			case ZATOPIONY:
+				planszaAI[x][y].obiekt = zatopiony;
+				break;
+			case PUDLO:
+				planszaAI[x][y].obiekt = pudlo;
+				break;
+			case WODA_NIEDOZWOLONA:
+				planszaAI[x][y].obiekt = woda;
+				planszaAI[x][y].czyMoznaUstawicStatek = niedozwolony;
+				break;
+		}
+
 	}
 }
