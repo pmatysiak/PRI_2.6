@@ -31,12 +31,12 @@
 void ustawKolory();
 void odswiezLewaPlansze();
 void rysujPlansze();
-void zmienStanDebug();
+//void zmienStanDebug();
 void zmienStan();
 void odswiezPole();
 void ruchKursora();
 void wyswietlSciage();
-void rysujPodgladOkretow();
+//void rysujPodgladOkretow();
 //void odswiezPodgladOkretow();
 void czytajKlawisz();
 void inicjalizujPlansze();
@@ -311,7 +311,7 @@ void odswiezLewaPlansze() {
 			}
 		}
 }
-
+/*
 void zmienStanDebug(int x_curs, int y_curs) {
 	//planszaGracza[x][y].obiekt = statek;
 	//planszaGracza[x][y].obiekt = ((planszaGracza[x][y].obiekt) % 6)+1;
@@ -345,7 +345,7 @@ void zmienStanDebug(int x_curs, int y_curs) {
 //	mvprintw (0, WIDTH-40, "status: %d", planszaGracza[x-1][y-1].obiekt);
 
 }
-
+*/
 void zmienStan(int x_curs, int y_curs, int stan) {
 	//planszaGracza[x][y].obiekt = statek;
 	//planszaGracza[x][y].obiekt = ((planszaGracza[x][y].obiekt) % 6)+1;
@@ -560,7 +560,7 @@ void wyswietlSciage() {
 	
 	attroff(A_REVERSE);
 }
-
+/*
 void rysujPodgladOkretow() {
 
 	mvprintw(4, 5, "Gracz");
@@ -601,6 +601,7 @@ void rysujPodgladOkretow() {
 
 	attroff(COLOR_PAIR(STATEK));
 }
+*/
 /*
 void odswiezPodgladOkretow() {
 		
@@ -773,10 +774,11 @@ void czytajKlawisz() {
 	int key;
 
 	while ( (key = getch() ) !=' ') {
-
+/*
 		if (zwyciestwo != 0) {
 			break;
 		}
+		*/
 	/*	else
 		switch ( key ) {
 			
