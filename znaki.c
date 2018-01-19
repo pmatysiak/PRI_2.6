@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <ncurses.h>
 
 #define DEBUG 1
@@ -35,7 +36,7 @@ void odswiezPole();
 void ruchKursora();
 void wyswietlSciage();
 void rysujPodgladOkretow();
-void odswiezPodgladOkretow();
+//void odswiezPodgladOkretow();
 void czytajKlawisz();
 void inicjalizujPlansze();
 void ustawOkretyGracza();
@@ -65,7 +66,7 @@ struct PolePlanszy {
 struct PolePlanszy planszaGracza[10][10];
 struct PolePlanszy planszaAI[10][10];
 
-struct Player {
+/*struct Player {
 	int okret_4;
 	int okret_3;
 	int okret_2;
@@ -74,7 +75,10 @@ struct Player {
 
 struct Player gracz;
 struct Player komputer;
+*/
 
+int kratkiOkretowGracza;
+int kratkiOkretowAI;
 
 int x_cur, y_cur;
 int zwyciestwo;
@@ -88,15 +92,8 @@ int main()
 	
 	//inicjalizacja stanu okretow gracza i komputera
 
-	gracz.okret_4 = 4;
-	gracz.okret_3 = 6;
-	gracz.okret_2 = 6;
-	gracz.okret_1 = 4;
-
-	komputer.okret_4 = 4;
-	komputer.okret_3 = 6;
-	komputer.okret_2 = 6;
-	komputer.okret_1 = 4;
+	kratkiOkretowGracza = 20;
+	kratkiOkretowAI = 20;
 
 
 	initscr();
@@ -147,7 +144,7 @@ int main()
 
 
 
-//	ustawOkretyGracza();
+	ustawOkretyGracza();
 
 
 	rysujPodgladOkretow();
@@ -378,8 +375,8 @@ void odswiezPole(int x_curs, int y_curs) {
 	y = y_curs - 6;
 	if (x_curs < 36) {
 		x = x_curs/2 - 7;
-		stan = planszaGracza[x -1][y - 1].obiekt;
-		dozw = planszaGracza[x -1][y - 1].czyMoznaUstawicStatek;
+		stan = planszaGracza[x - 1][y - 1].obiekt;
+		dozw = planszaGracza[x - 1][y - 1].czyMoznaUstawicStatek;
 		attron(COLOR_PAIR(stan));
 		switch (stan) {
 			case WODA:
@@ -582,7 +579,7 @@ void rysujPodgladOkretow() {
 
 	attroff(COLOR_PAIR(STATEK));
 }
-
+/*
 void odswiezPodgladOkretow() {
 		
 		if (gracz.okret_4 == 0) {
@@ -749,7 +746,7 @@ void odswiezPodgladOkretow() {
 		}
 
 }
-
+*/
 void czytajKlawisz() {
 	int key;
 
@@ -822,6 +819,26 @@ void inicjalizujPlansze() {
 			planszaAI[iter_x][iter_y].czyMoznaUstawicStatek = dozwolony;
 		}
 	}
+	planszaAI[4][0].obiekt = statek;
+	planszaAI[4][1].obiekt = statek;
+	planszaAI[4][2].obiekt = statek;
+	planszaAI[4][3].obiekt = statek;
+	planszaAI[4][4].obiekt = statek;
+	planszaAI[4][5].obiekt = statek;
+	planszaAI[4][6].obiekt = statek;
+	planszaAI[4][7].obiekt = statek;
+	planszaAI[4][8].obiekt = statek;
+	planszaAI[4][9].obiekt = statek;
+	planszaAI[5][0].obiekt = statek;
+	planszaAI[5][1].obiekt = statek;
+	planszaAI[5][2].obiekt = statek;
+	planszaAI[5][3].obiekt = statek;
+	planszaAI[5][4].obiekt = statek;
+	planszaAI[5][5].obiekt = statek;
+	planszaAI[5][6].obiekt = statek;
+	planszaAI[5][7].obiekt = statek;
+	planszaAI[5][8].obiekt = statek;
+	planszaAI[5][9].obiekt = statek;
 }
 
 void ustawOkretyGracza() {
@@ -1269,8 +1286,9 @@ void turaGracza() {
 	int key;
 	int strzal;
 	int koniecTury;
+	int czyTrafione;
 	koniecTury = 0;
-	while ( (key = getch())!= 'q' && koniecTury == 0) {
+	while ( (key = getch())!= 'q' && koniecTury == 0 && zwyciestwo == 0) {
 
 		
 		switch( key ) {
@@ -1303,8 +1321,8 @@ void turaGracza() {
 				}
 				break;
 			case ' ':
-			
-				if (strzalGracza(x_cur, y_cur) == 0 ) {
+				czyTrafione = strzalGracza(x_cur, y_cur);
+				if (czyTrafione == 0 ) {
 					koniecTury = 1;
 					break;			
 				}
@@ -1321,9 +1339,10 @@ void turaGracza() {
 }
 
 void turaAI() {
-	strzalAI();
-
-	
+	int koniecTuryAI;
+	do {
+		koniecTuryAI = strzalAI();
+	} while (koniecTuryAI == 0);
 }
 
 int strzalGracza(int x_curs, int y_curs) {
@@ -1331,24 +1350,54 @@ int strzalGracza(int x_curs, int y_curs) {
 	x_tab = (x_curs-43)/2;
 	y_tab = y_curs - 7;
 
+	if (planszaAI[x_tab][y_tab].obiekt == woda ) {
+		planszaAI[x_tab][y_tab].obiekt = pudlo;
+		odswiezPole(x_curs, y_curs);
+		return 0;
+	}
 	if (planszaAI[x_tab][y_tab].obiekt == statek ) {
 		planszaAI[x_tab][y_tab].obiekt = trafiony;
-		
+		odswiezPole(x_curs, y_curs);
+		kratkiOkretowAI--;
+		mvprintw(8,70,"%d ", kratkiOkretowAI);
+		if (kratkiOkretowAI < 1) {
+			zwyciestwo = 1;
+		}
+		return 1;
 		
 
 	}
 	if (planszaAI[x_tab][y_tab].obiekt == trafiony) {
-		mvprintw(y_curs, x_curs,"*");
+		return 1;
 	}
-	//sprawdz czy wszsytkie - jak ta to zwyciestwo na 1
-	//odswiezPole(x_curs, y_curs);
-	return 1; //1 jak trafilo 0 jqak nie 
 }
 
-int strzalAI(int x_curs, int y_curs) {
-	//sprawdz czy trafilo
-	//sprawdz czy wszsytkie - jak ta to zwyciestwo na -1
-	//odswiezPole(x_curs, y_curs);
-	printw("trafilem");
-	return 0;
+int strzalAI() {
+	int zarodek, x_traf, y_traf;
+    time_t tt;
+    zarodek = time(&tt) + kratkiOkretowGracza;
+    srand(zarodek);
+
+    x_traf = rand()%10;
+    y_traf = rand()%10;
+
+	if (planszaGracza[x_traf][y_traf].obiekt == woda ) {
+		planszaGracza[x_traf][y_traf].obiekt = pudlo;
+		odswiezPole((x_traf*2)+17, y_traf+7);
+		return 1;
+	}
+	else if (planszaGracza[x_traf][y_traf].obiekt == statek ) {
+		planszaGracza[x_traf][y_traf].obiekt = trafiony;
+		--kratkiOkretowGracza;
+		odswiezPole((x_traf*2)+17, y_traf+7);
+		return 0;
+	}
+	else if (planszaGracza[x_traf][y_traf].obiekt == trafiony ) {
+		return 0;
+	}
+	else if (planszaGracza[x_traf][y_traf].obiekt == pudlo ) {
+		return 0;
+	} else {
+		return 1;
+	}
 }
