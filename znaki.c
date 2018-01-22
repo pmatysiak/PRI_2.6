@@ -36,7 +36,7 @@ void zmienStan();
 void odswiezPole();
 void ruchKursora();
 void wyswietlSciage();
-//void rysujPodgladOkretow();
+void rysujPodgladOkretow();
 //void odswiezPodgladOkretow();
 void czytajKlawisz();
 void inicjalizujPlansze();
@@ -153,7 +153,7 @@ int main()
 
 	//rysujPlansze();
 
-	//rysujPodgladOkretow();
+	rysujPodgladOkretow();
 
 	gra();
 	
@@ -560,7 +560,7 @@ void wyswietlSciage() {
 	
 	attroff(A_REVERSE);
 }
-/*
+
 void rysujPodgladOkretow() {
 
 	mvprintw(4, 5, "Gracz");
@@ -601,7 +601,7 @@ void rysujPodgladOkretow() {
 
 	attroff(COLOR_PAIR(STATEK));
 }
-*/
+
 /*
 void odswiezPodgladOkretow() {
 		
@@ -913,6 +913,8 @@ void ustawOkret(int wielkoscOkretu) {
 					}
 					move(y_cur, x_cur);
 					zmienStan(x_cur, y_cur, STATEK);
+					y_cur = TARGET_Y_MIN;
+					x_cur = TARGET_X_MIN;
 					move(y_cur, x_cur);
 					odswiezLewaPlansze();
 					break;
@@ -975,6 +977,8 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur, y_cur, STATEK);
 								zmienStan(x_cur + 2, y_cur, STATEK);
 								odswiezLewaPlansze();
+								y_cur = TARGET_Y_MIN;
+								x_cur = TARGET_X_MIN;
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1003,6 +1007,8 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur, y_cur, STATEK);
 								zmienStan(x_cur, y_cur + 1, STATEK);
 								odswiezLewaPlansze();
+								y_cur = TARGET_Y_MIN;
+								x_cur = TARGET_X_MIN;
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1080,6 +1086,8 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur + 2, y_cur, STATEK);
 								zmienStan(x_cur + 4, y_cur, STATEK);
 								odswiezLewaPlansze();
+								y_cur = TARGET_Y_MIN;
+								x_cur = TARGET_X_MIN;
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1113,6 +1121,8 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur, y_cur + 1, STATEK);
 								zmienStan(x_cur, y_cur + 2, STATEK);
 								odswiezLewaPlansze();
+								y_cur = TARGET_Y_MIN;
+								x_cur = TARGET_X_MIN;
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1193,6 +1203,8 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur + 4, y_cur, STATEK);
 								zmienStan(x_cur + 6, y_cur, STATEK);
 								odswiezLewaPlansze();
+								y_cur = TARGET_Y_MIN;
+								x_cur = TARGET_X_MIN;
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1228,6 +1240,8 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur, y_cur + 2, STATEK);
 								zmienStan(x_cur, y_cur + 3, STATEK);
 								odswiezLewaPlansze();
+								y_cur = TARGET_Y_MIN;
+								x_cur = TARGET_X_MIN;
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
