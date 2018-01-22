@@ -1,0 +1,1431 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="refresh" content="100" >
+	<title>Okręty - projekt 2.6 - Piotr Matysiak</title>
+	<style>
+		body {
+			/*background-color: #363841;*/
+			background: repeating-linear-gradient(
+						45deg,
+						#202532,
+						#232A32 4px,
+						#1F2023 2px,
+						#292F37 6px
+						);
+			color: #FFFBDD;
+			font-family: Century Gothic;
+			margin: 0px;
+		}
+		p, h1, h3, h4, h5, h6 {
+			text-align: center;
+			color: #FFFBDD;
+			text-shadow: 1px 1px 1px #2D2D2D;
+		}
+		table, td, th {
+			border: 1px solid white;
+			text-align: center;
+			border-collapse: collapse;
+		}
+		table {
+			border-left: 0px;
+			border-top: 0px;
+		}
+		td, th {
+			width: 24px;
+			height: 27px;
+		}
+		.liczby {
+			border-left: 0px;
+		}
+		.litery {
+			border-top: 0px;
+		}
+		.tura {
+			background-color: #383F4E;
+			background-color: rgba(60, 60, 60, 0.7);
+			margin: 0px;
+			padding: 30px;
+			padding-top: 1px;
+			text-align: center;
+		}
+		.tura:nth-of-type(even) {
+			background-color: #242433;
+			background-color: rgba(36, 36, 36, 0.7);
+		}
+		.gracz, .ai {
+			display: inline-block;
+			transition-property: transform;
+    		transition-duration: 0.3s;
+    		margin: 0px;
+		}
+		.gracz {
+			/*border: red 1px solid;*/
+			transform: rotate3d(1, 1, -0.15, 20deg);
+			animation-name: gracz_ani;
+			animation-duration: 2s;
+			animation-iteration-count: 1;
+		}
+		.ai {
+			margin-left: 70px;
+			padding: 0px;
+			/*border: red 1px solid;*/
+			transform: rotate3d(-1, 1, 0.15, 20deg);
+		}
+		.ai table, .gracz table, .gracz_podglad table, .ai_podglad table {
+			box-shadow: 3px 3px 5px #808080;
+		}
+
+		.ai:hover, .gracz:hover {
+			transform: scale(1.1); 
+		}
+
+		@keyframes gracz_ani {
+			from {margin-right: 200px;}
+			to {margin-right: 0px;}
+		}
+		.tooltip {
+		    position: relative;
+		}
+		.tooltip .tooltiptext {
+			font-size: 9pt;
+		    visibility: hidden;
+		    width: 80px;
+		    background-color: #C7C7C7;
+		    color: #343434;
+		    text-align: center;
+		    padding: 5px 0;
+		    border: 2px white solid;
+		    box-shadow: 2px 2px 7px black;
+		    border-radius: 20px;
+		    border-top-left-radius: 0px;
+		    position: absolute;
+		    top: 28px;
+		    left: 28px;
+		    z-index: 1;
+		}
+		.tooltip:hover .tooltiptext {
+		    visibility: visible;
+		}
+
+		.podglad {
+			position: fixed;
+			left: -575px;
+			height: 360px;
+			width: 670px;
+			top: 10px;
+			transform: scale(0.6);
+			background-color: #383F4E;
+			margin: 0px;
+			padding: 40px;
+			padding-top: 1px;
+			text-align: center;
+			transition-property: left;
+    		transition-duration: 0.3s;
+    		border-radius: 0px 40px 40px 0px;
+    		border: 3px black solid;
+		}
+		.podglad:hover {
+			left: -170px;
+		}
+		.gracz_podglad {
+			display: inline-block;
+    		margin: 0px;
+		}
+		.ai_podglad {
+			display: inline-block;
+    		margin: 0px;
+    		margin-left: 40px;
+			padding: 0px;
+		}
+		.podglad p {
+			font-size: 16pt;
+			display: inline-block;
+			position: relative;
+			left: 350px;
+			top: -190px;
+			transform: rotate(90deg);
+		}
+
+		/*POLA*/
+
+
+		.woda {
+			background-color: #2E4EF2;
+			transition-property: background-color;
+			transition-duration: 1s;
+		}
+		.woda:before {
+			content: "~";
+		}
+		.woda:hover {
+			background-color: #1855A9;
+		}
+		.woda:hover:before {
+			content: "~~";
+		}
+		.woda_niedozwolona {
+
+		}
+		.statek {
+			background-color: #569340;
+			color: yellow;
+			transition-property: background-color;
+			transition-duration: 1s;
+		}
+		.statek:before {
+			content: "S";
+		}
+		.statek:hover {
+			background-color: #487837;
+		}
+		.statek:hover:before {
+			content: "SS";
+		}
+		.statek_ustawiany {
+
+		}
+		.trafiony {
+
+		}
+
+	</style>
+</head>
+<body>
+	<h1>Okręty</h1>
+	<h3>Przebieg rozgrywki</h3>
+
+	<div class="podglad">
+		<div class="gracz_podglad">
+			<h4>Okręty AI</h4>
+			<table>
+				<!-- rząd literek -->
+				<tr> 
+					<th class="litery liczby"></th>
+					<th class="litery">A</th>
+					<th class="litery">B</th>
+					<th class="litery">C</th>
+					<th class="litery">D</th>
+					<th class="litery">E</th>
+					<th class="litery">F</th>
+					<th class="litery">G</th>
+					<th class="litery">H</th>
+					<th class="litery">I</th>
+					<th class="litery">J</th>
+				</tr>
+
+				<!-- 1 -->
+				<tr>
+					<th class="liczby">1</th>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">2</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">3</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">4</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">5</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">6</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">7</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip statek"><span class="tooltiptext">Statek</span></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">8</th>
+						<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">9</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">10</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+		<div class="ai_podglad">
+			<h4>Okręty gracza</h4>
+			<table>
+				<!-- rząd literek -->
+				<tr> 
+					<th class="litery liczby"></th>
+					<th class="litery">A</th>
+					<th class="litery">B</th>
+					<th class="litery">C</th>
+					<th class="litery">D</th>
+					<th class="litery">E</th>
+					<th class="litery">F</th>
+					<th class="litery">G</th>
+					<th class="litery">H</th>
+					<th class="litery">I</th>
+					<th class="litery">J</th>
+				</tr>
+
+				<!-- 1 -->
+				<tr>
+					<th class="liczby">1</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">2</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">3</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">4</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">5</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">6</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">7</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">8</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">9</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">10</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+		<div>
+			<p>Podgląd ułożenia okrętów</p>
+		</div>
+	</div>
+
+	<div class="tura">
+		<h5>Tura 1</h5>
+		<div class="gracz">
+			<h6>Ruch gracza</h4>
+			<table>
+				<!-- rząd literek -->
+				<tr> 
+					<th class="litery liczby"></th>
+					<th class="litery">A</th>
+					<th class="litery">B</th>
+					<th class="litery">C</th>
+					<th class="litery">D</th>
+					<th class="litery">E</th>
+					<th class="litery">F</th>
+					<th class="litery">G</th>
+					<th class="litery">H</th>
+					<th class="litery">I</th>
+					<th class="litery">J</th>
+				</tr>
+
+				<!-- 1 -->
+				<tr>
+					<th class="liczby">1</th>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">2</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">3</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">4</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">5</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">6</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">7</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip statek"><span class="tooltiptext">Statek</span></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">8</th>
+						<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">9</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">10</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+		<div class="ai">
+			<h6>Ruch AI</h4>
+			<table>
+				<!-- rząd literek -->
+				<tr> 
+					<th class="litery liczby"></th>
+					<th class="litery">A</th>
+					<th class="litery">B</th>
+					<th class="litery">C</th>
+					<th class="litery">D</th>
+					<th class="litery">E</th>
+					<th class="litery">F</th>
+					<th class="litery">G</th>
+					<th class="litery">H</th>
+					<th class="litery">I</th>
+					<th class="litery">J</th>
+				</tr>
+
+				<!-- 1 -->
+				<tr>
+					<th class="liczby">1</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">2</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">3</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">4</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">5</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">6</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">7</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">8</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">9</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">10</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div class="tura">
+		<h5>Tura 2</h5>
+		<div class="gracz">
+			<h6>Ruch gracza</h4>
+			<table>
+				<!-- rząd literek -->
+				<tr> 
+					<th class="litery liczby"></th>
+					<th class="litery">A</th>
+					<th class="litery">B</th>
+					<th class="litery">C</th>
+					<th class="litery">D</th>
+					<th class="litery">E</th>
+					<th class="litery">F</th>
+					<th class="litery">G</th>
+					<th class="litery">H</th>
+					<th class="litery">I</th>
+					<th class="litery">J</th>
+				</tr>
+
+				<!-- 1 -->
+				<tr>
+					<th class="liczby">1</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">2</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">3</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">4</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">5</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">6</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">7</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">8</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">9</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">10</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+		<div class="ai">
+			<h6>Ruch AI</h4>
+			<table>
+				<!-- rząd literek -->
+				<tr> 
+					<th class="litery liczby"></th>
+					<th class="litery">A</th>
+					<th class="litery">B</th>
+					<th class="litery">C</th>
+					<th class="litery">D</th>
+					<th class="litery">E</th>
+					<th class="litery">F</th>
+					<th class="litery">G</th>
+					<th class="litery">H</th>
+					<th class="litery">I</th>
+					<th class="litery">J</th>
+				</tr>
+
+				<!-- 1 -->
+				<tr>
+					<th class="liczby">1</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">2</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">3</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">4</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">5</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">6</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">7</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">8</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">9</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">10</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div class="tura">
+		<h5>Tura 3</h5>
+		<div class="gracz">
+			<h6>Ruch gracza</h4>
+			<table>
+				<!-- rząd literek -->
+				<tr> 
+					<th class="litery liczby"></th>
+					<th class="litery">A</th>
+					<th class="litery">B</th>
+					<th class="litery">C</th>
+					<th class="litery">D</th>
+					<th class="litery">E</th>
+					<th class="litery">F</th>
+					<th class="litery">G</th>
+					<th class="litery">H</th>
+					<th class="litery">I</th>
+					<th class="litery">J</th>
+				</tr>
+
+				<!-- 1 -->
+				<tr>
+					<th class="liczby">1</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">2</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">3</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">4</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">5</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">6</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">7</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">8</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">9</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">10</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+		<div class="ai">
+			<h6>Ruch AI</h4>
+			<table>
+				<!-- rząd literek -->
+				<tr> 
+					<th class="litery liczby"></th>
+					<th class="litery">A</th>
+					<th class="litery">B</th>
+					<th class="litery">C</th>
+					<th class="litery">D</th>
+					<th class="litery">E</th>
+					<th class="litery">F</th>
+					<th class="litery">G</th>
+					<th class="litery">H</th>
+					<th class="litery">I</th>
+					<th class="litery">J</th>
+				</tr>
+
+				<!-- 1 -->
+				<tr>
+					<th class="liczby">1</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">2</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">3</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">4</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">5</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">6</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">7</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">8</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">9</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">10</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div>
+		<p>Koniec zapisanej rozgrywki.</p>
+	</div>
+
+</body>
+</html>
