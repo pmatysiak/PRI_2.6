@@ -14,13 +14,16 @@
 						#292F37 6px
 						);
 			color: #FFFBDD;
-			font-family: Century Gothic;
+			font-family: Verdana,/*, Century Gothic, Ubuntu,*/ sans-serif;
 			margin: 0px;
 		}
 		p, h1, h3, h4, h5, h6 {
 			text-align: center;
 			color: #FFFBDD;
 			text-shadow: 1px 1px 1px #2D2D2D;
+		}
+		h1 {
+			margin-top: 10px;
 		}
 		table, td, th {
 			border: 1px solid white;
@@ -34,6 +37,7 @@
 		td, th {
 			width: 24px;
 			height: 27px;
+			background-clip: padding-box;
 		}
 		.liczby {
 			border-left: 0px;
@@ -110,23 +114,26 @@
 
 		.podglad {
 			position: fixed;
-			left: -575px;
-			height: 360px;
-			width: 670px;
+			left: -440px;
+			height: 190px;
+			width: 400px;
 			top: 10px;
-			transform: scale(0.6);
+			/*transform: scale(0.6);*/
 			background-color: #383F4E;
 			margin: 0px;
 			padding: 40px;
 			padding-top: 1px;
+			font-size: 7pt;
 			text-align: center;
 			transition-property: left;
     		transition-duration: 0.3s;
     		border-radius: 0px 40px 40px 0px;
     		border: 3px black solid;
+    		border-left: 0px;
+    		z-index: 1;
 		}
 		.podglad:hover {
-			left: -170px;
+			left: -40px;
 		}
 		.gracz_podglad {
 			display: inline-block;
@@ -139,12 +146,37 @@
 			padding: 0px;
 		}
 		.podglad p {
-			font-size: 16pt;
+			font-size: 10pt;
 			display: inline-block;
 			position: relative;
-			left: 350px;
-			top: -190px;
+			left: 220px;
+			top: -106px;
 			transform: rotate(90deg);
+		}
+		.podglad td, .podglad th {
+			width: 12px;
+			height: 15px;
+			font-size: 6pt;
+		}
+		.podglad .tooltip .tooltiptext {
+			font-size: 7pt;
+		    visibility: hidden;
+		    width: 70px;
+		    background-color: #C7C7C7;
+		    color: #343434;
+		    text-align: center;
+		    padding: 3px 0;
+		    border: 1px white solid;
+		    box-shadow: 1px 1px 4px black;
+		    border-radius: 10px;
+		    border-top-left-radius: 0px;
+		    position: absolute;
+		    top: 20px;
+		    left: 20px;
+		    z-index: 2;
+		}
+		.podglad .tooltip:hover .tooltiptext {
+		    visibility: visible;
 		}
 
 		/*POLA*/
@@ -162,7 +194,7 @@
 			background-color: #1855A9;
 		}
 		.woda:hover:before {
-			content: "~~";
+			content: "W";
 		}
 		.woda_niedozwolona {
 
@@ -180,7 +212,7 @@
 			background-color: #487837;
 		}
 		.statek:hover:before {
-			content: "SS";
+			content: "T";
 		}
 		.statek_ustawiany {
 
