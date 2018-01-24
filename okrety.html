@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
@@ -36,7 +37,7 @@
 		}
 		td, th {
 			width: 24px;
-			height: 27px;
+			height: 24px;
 			background-clip: padding-box;
 		}
 		.liczby {
@@ -52,6 +53,8 @@
 			padding: 30px;
 			padding-top: 1px;
 			text-align: center;
+			/*position: relative;*/
+			/*z-index: 0;*/
 		}
 		.tura:nth-of-type(even) {
 			background-color: #242433;
@@ -62,6 +65,7 @@
 			transition-property: transform;
     		transition-duration: 0.3s;
     		margin: 0px;
+    		position: relative;
 		}
 		.gracz {
 			/*border: red 1px solid;*/
@@ -69,12 +73,18 @@
 			animation-name: gracz_ani;
 			animation-duration: 2s;
 			animation-iteration-count: 1;
+			z-index: 2;
 		}
 		.ai {
 			margin-left: 70px;
 			padding: 0px;
 			/*border: red 1px solid;*/
 			transform: rotate3d(-1, 1, 0.15, 20deg);
+			z-index: 1;
+		}
+		.ai table {
+			position: relative;
+			z-index: 0;
 		}
 		.ai table, .gracz table, .gracz_podglad table, .ai_podglad table {
 			box-shadow: 3px 3px 5px #808080;
@@ -95,8 +105,8 @@
 			font-size: 9pt;
 		    visibility: hidden;
 		    width: 80px;
-		    background-color: #C7C7C7;
-		    color: #343434;
+		    background-color: rgba(199,199,199,1);
+		    color: rgba(52,52,52,1);
 		    text-align: center;
 		    padding: 5px 0;
 		    border: 2px white solid;
@@ -106,7 +116,7 @@
 		    position: absolute;
 		    top: 28px;
 		    left: 28px;
-		    z-index: 1;
+		    z-index: 3;
 		}
 		.tooltip:hover .tooltiptext {
 		    visibility: visible;
@@ -130,7 +140,7 @@
     		border-radius: 0px 40px 40px 0px;
     		border: 3px black solid;
     		border-left: 0px;
-    		z-index: 1;
+    		z-index: 5;
 		}
 		.podglad:hover {
 			left: -40px;
@@ -155,7 +165,7 @@
 		}
 		.podglad td, .podglad th {
 			width: 12px;
-			height: 15px;
+			height: 12px;
 			font-size: 6pt;
 		}
 		.podglad .tooltip .tooltiptext {
@@ -181,8 +191,9 @@
 
 		/*POLA*/
 
-
+	/*WODA*/
 		.woda {
+			color: #6acbf2;
 			background-color: #2E4EF2;
 			transition-property: background-color;
 			transition-duration: 1s;
@@ -192,14 +203,11 @@
 		}
 		.woda:hover {
 			background-color: #1855A9;
+			font-weight: bolder;
 		}
-		.woda:hover:before {
-			content: "W";
-		}
-		.woda_niedozwolona {
-
-		}
+	/*STATEK*/
 		.statek {
+			color: #951ca8;
 			background-color: #569340;
 			color: yellow;
 			transition-property: background-color;
@@ -210,16 +218,37 @@
 		}
 		.statek:hover {
 			background-color: #487837;
+			font-weight: bolder;
 		}
-		.statek:hover:before {
-			content: "T";
-		}
-		.statek_ustawiany {
-
-		}
+	/*TRAFIONY*/
 		.trafiony {
-
+			color: #e2ca0d;
+			background-color: #b50000;
+			transition-property: background-color;
+			transition-duration: 1s;
 		}
+		.trafiony:before {
+			content: "*";
+		}
+		.trafiony:hover {
+			background-color: #d60000;
+			font-weight: bolder;
+		}
+	/*PUDLO*/
+		.pudlo {
+			color: #2d45bc;
+			background-color: black;
+			transition-property: color;
+			transition-duration: 1s;
+		}
+		.pudlo:before {
+			content: "O";
+		}
+		.pudlo:hover {
+			color: #586bc9;
+			font-weight: bolder;
+		}
+
 
 	</style>
 </head>
@@ -251,8 +280,8 @@
 					<th class="liczby">1</th>
 					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
 					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
-					<td></td>
-					<td></td>
+					<td class="tooltip trafiony"><span class="tooltiptext">Trafiony</span></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
 					<td></td>
 					<td></td>
 					<td></td>
@@ -376,7 +405,7 @@
 					<td></td>
 					<td></td>
 					<td></td>
-					<td></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
 				</tr>
 			</table>
 		</div>
@@ -527,7 +556,7 @@
 					<td></td>
 					<td></td>
 					<td></td>
-					<td></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
 				</tr>
 			</table>
 		</div>
@@ -562,10 +591,10 @@
 					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
 					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
 					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip trafiony"><span class="tooltiptext">Trafiony</span></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
 					<td></td>
 					<td></td>
 					<td></td>
@@ -1256,23 +1285,23 @@
 					<td></td>
 					<td></td>
 					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip trafiony"><span class="tooltiptext">Trafiony</span></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
 				</tr>
 				<tr>
 					<th class="liczby">8</th>
-						<td></td>
 					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip trafiony"><span class="tooltiptext">Trafiony</span></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
 				</tr>
 				<tr>
 					<th class="liczby">9</th>
@@ -1282,10 +1311,10 @@
 					<td></td>
 					<td></td>
 					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip trafiony"><span class="tooltiptext">Trafiony</span></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
 				</tr>
 				<tr>
 					<th class="liczby">10</th>
@@ -1297,8 +1326,8 @@
 					<td></td>
 					<td></td>
 					<td></td>
-					<td></td>
-					<td></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
 				</tr>
 			</table>
 		</div>
@@ -1440,6 +1469,96 @@
 				</tr>
 				<tr>
 					<th class="liczby">10</th>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip trafiony"><span class="tooltiptext">Trafiony</span></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div class="tura">
+		<h5>Tura 4</h5>
+		<div class="gracz">
+			<h6>Ruch gracza</h6>
+			<table>
+				<!-- rząd literek -->
+				<tr> 
+					<th class="litery liczby"></th>
+					<th class="litery">A</th>
+					<th class="litery">B</th>
+					<th class="litery">C</th>
+					<th class="litery">D</th>
+					<th class="litery">E</th>
+					<th class="litery">F</th>
+					<th class="litery">G</th>
+					<th class="litery">H</th>
+					<th class="litery">I</th>
+					<th class="litery">J</th>
+				</tr>
+
+				<!-- 1 -->
+				<tr>
+					<th class="liczby">1</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">2</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">3</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">4</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">5</th>
 						<td></td>
 					<td></td>
 					<td></td>
@@ -1451,10 +1570,225 @@
 					<td></td>
 					<td></td>
 				</tr>
+				<tr>
+					<th class="liczby">6</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">7</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip trafiony"><span class="tooltiptext">Trafiony</span></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
+				</tr>
+				<tr>
+					<th class="liczby">8</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip trafiony"><span class="tooltiptext">Trafiony</span></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
+				</tr>
+				<tr>
+					<th class="liczby">9</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip trafiony"><span class="tooltiptext">Trafiony</span></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
+				</tr>
+				<tr>
+					<th class="liczby">10</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
+				</tr>
+			</table>
+		</div>
+		<div class="ai">
+			<h6>Ruch AI</h4>
+			<table>
+				<!-- rząd literek -->
+				<tr> 
+					<th class="litery liczby"></th>
+					<th class="litery">A</th>
+					<th class="litery">B</th>
+					<th class="litery">C</th>
+					<th class="litery">D</th>
+					<th class="litery">E</th>
+					<th class="litery">F</th>
+					<th class="litery">G</th>
+					<th class="litery">H</th>
+					<th class="litery">I</th>
+					<th class="litery">J</th>
+				</tr>
+
+				<!-- 1 -->
+				<tr>
+					<th class="liczby">1</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">2</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">3</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">4</th>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">5</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">6</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">7</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">8</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">9</th>
+						<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th class="liczby">10</th>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip woda"><span class="tooltiptext">Woda</span></td>
+					<td class="tooltip trafiony"><span class="tooltiptext">Trafiony</span></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="tooltip pudlo"><span class="tooltiptext">Pudło</span></td>
+				</tr>
 			</table>
 		</div>
 	</div>
-
 	<div>
 		<p>Koniec zapisanej rozgrywki.</p>
 	</div>
