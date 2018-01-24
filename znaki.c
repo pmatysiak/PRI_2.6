@@ -27,6 +27,7 @@
 #define PUDLO 6
 #define WODA_NIEDOZWOLONA 7
 #define KURSOR 8
+#define NIE_STRZELA_TU 9
 
 void ustawKolory();
 void odswiezLewaPlansze();
@@ -54,6 +55,7 @@ void ustawOkretAI();
 void zmienStanAI();
 char* stanPola();
 void zapisDoPliku();
+void wyborPoziomu();
 
 struct PolePlanszy {
 	enum stan {
@@ -68,6 +70,10 @@ struct PolePlanszy {
 		niedozwolony = 0,
 		dozwolony = 1
 	} czyMoznaUstawicStatek;
+	enum ai {
+		strzelaTu = 1,
+		nieStrzelaTu = 0,
+	} czyAIlvl2tuStrzela;
 };
 
 struct PolePlanszy planszaGracza[101][10][10];
@@ -88,8 +94,12 @@ int kratkiOkretowGracza;
 int kratkiOkretowAI;
 
 int x_cur, y_cur;
+int obrot;
 int zwyciestwo;
 int tura;
+int level;
+
+int trafienieAI[3];
 
 int main()
 {
@@ -103,7 +113,11 @@ int main()
 	kratkiOkretowGracza = 20;
 	kratkiOkretowAI = 20;
 	tura = 1;
-
+	level = 2;
+	obrot = 0;
+	trafienieAI[0] = 0;
+	trafienieAI[1] = 0;
+	trafienieAI[2] = 0;
 
 	initscr();
 
@@ -136,6 +150,8 @@ int main()
 
 	wyswietlSciage();
 	
+	wyborPoziomu();
+
 	rysujPlansze();
 
 	x_cur = TARGET_X_MIN;
@@ -159,6 +175,12 @@ int main()
 	//rysujPlansze();
 
 	rysujPodgladOkretow();
+
+	mvprintw(3, 0, "                           Okrety ustawione! Strzelaj!                          ");
+	move(STATUS_Y_MIN, STATUS_X_MIN);
+	getch();
+	mvprintw(3, 0, "                                                                                ");
+	move(STATUS_Y_MIN, STATUS_X_MIN);
 
 	gra();
 	zapisDoPliku();
@@ -355,12 +377,14 @@ void zmienStanDebug(int x_curs, int y_curs) {
 void zmienStan(int x_curs, int y_curs, int stan) {
 	//planszaGracza[0][x][y].obiekt = statek;
 	//planszaGracza[0][x][y].obiekt = ((planszaGracza[0][x][y].obiekt) % 6)+1;
+	
+	
 	int x, y;
 	x = x_curs/2 - 7;
 	y = y_curs - 6;
 	if (x > 0 && x <= 10 && y > 0 && y <= 10) {
-	//	mvprintw (0, WIDTH-21, "zmiana x = %c, y = %d ", x+64, y);
-	//	mvprintw (1, WIDTH-18, "tab x = %d, y = %d ", x-1, y-1);
+//	mvprintw (0, WIDTH-21, "zmiana x = %c, y = %d ", x+64, y);
+//	mvprintw (1, WIDTH-18, "tab x = %d, y = %d ", x-1, y-1);
 
 		switch ( stan ) {
 			case WODA:
@@ -390,6 +414,7 @@ void zmienStan(int x_curs, int y_curs, int stan) {
 	//	mvprintw (0, WIDTH-40, "status: %d", planszaGracza[0][x-1][y-1].obiekt);
 	//	mvprintw (1, WIDTH-40, "dozwol: %d", planszaGracza[0][x-1][y-1].czyMoznaUstawicStatek);
 	}
+
 }
 
 void odswiezPole(int x_curs, int y_curs) {
@@ -849,8 +874,12 @@ void inicjalizujPlansze() {
 			for ( iter_x = 0; iter_x < 10; iter_x++ ) {
 				planszaGracza[iter_tura][iter_x][iter_y].obiekt = woda;
 				planszaGracza[iter_tura][iter_x][iter_y].czyMoznaUstawicStatek = dozwolony;
+				planszaGracza[iter_tura][iter_x][iter_y].czyAIlvl2tuStrzela = strzelaTu;
+
 				planszaAI[iter_tura][iter_x][iter_y].obiekt = woda;
 				planszaAI[iter_tura][iter_x][iter_y].czyMoznaUstawicStatek = dozwolony;
+				planszaAI[iter_tura][iter_x][iter_y].czyAIlvl2tuStrzela = strzelaTu;
+
 			}
 		}
 	}
@@ -900,7 +929,7 @@ void ustawOkret(int wielkoscOkretu) {
 	move(y_cur, x_cur);
 	int klawisz;
 	//int i;
-	int obrot;
+	
 	int hasToBreak;
 	hasToBreak = 0;
 	switch (wielkoscOkretu) {
@@ -924,8 +953,8 @@ void ustawOkret(int wielkoscOkretu) {
 					}
 					move(y_cur, x_cur);
 					zmienStan(x_cur, y_cur, STATEK);
-					y_cur = TARGET_Y_MIN;
-					x_cur = TARGET_X_MIN;
+	//				y_cur = TARGET_Y_MIN;
+	//				x_cur = TARGET_X_MIN;
 					move(y_cur, x_cur);
 					odswiezLewaPlansze();
 					break;
@@ -933,7 +962,7 @@ void ustawOkret(int wielkoscOkretu) {
 			}
 			break;
 		case 2:
-			obrot = 0;
+			
 			while ( (klawisz = getch() ) != 'q') {
 				odswiezLewaPlansze();
 				move(y_cur, x_cur);
@@ -988,8 +1017,8 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur, y_cur, STATEK);
 								zmienStan(x_cur + 2, y_cur, STATEK);
 								odswiezLewaPlansze();
-								y_cur = TARGET_Y_MIN;
-								x_cur = TARGET_X_MIN;
+		//						y_cur = TARGET_Y_MIN;
+		//						x_cur = TARGET_X_MIN;
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1018,8 +1047,8 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur, y_cur, STATEK);
 								zmienStan(x_cur, y_cur + 1, STATEK);
 								odswiezLewaPlansze();
-								y_cur = TARGET_Y_MIN;
-								x_cur = TARGET_X_MIN;
+		//						y_cur = TARGET_Y_MIN;
+		//						x_cur = TARGET_X_MIN;
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1035,7 +1064,7 @@ void ustawOkret(int wielkoscOkretu) {
 			break;
 
 		case 3:
-			obrot = 0;
+			
 			while ( (klawisz = getch() ) != 'q') {
 				odswiezLewaPlansze();
 				move(y_cur, x_cur);
@@ -1097,8 +1126,8 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur + 2, y_cur, STATEK);
 								zmienStan(x_cur + 4, y_cur, STATEK);
 								odswiezLewaPlansze();
-								y_cur = TARGET_Y_MIN;
-								x_cur = TARGET_X_MIN;
+			//					y_cur = TARGET_Y_MIN;
+			//					x_cur = TARGET_X_MIN;
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1132,8 +1161,8 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur, y_cur + 1, STATEK);
 								zmienStan(x_cur, y_cur + 2, STATEK);
 								odswiezLewaPlansze();
-								y_cur = TARGET_Y_MIN;
-								x_cur = TARGET_X_MIN;
+				//				y_cur = TARGET_Y_MIN;
+				//				x_cur = TARGET_X_MIN;
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1148,7 +1177,7 @@ void ustawOkret(int wielkoscOkretu) {
 			}
 			break;
 		case 4:
-			obrot = 0;
+			// obrot = 0;
 			while ( (klawisz = getch() ) != 'q') {
 				odswiezLewaPlansze();
 				move(y_cur, x_cur);
@@ -1214,8 +1243,8 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur + 4, y_cur, STATEK);
 								zmienStan(x_cur + 6, y_cur, STATEK);
 								odswiezLewaPlansze();
-								y_cur = TARGET_Y_MIN;
-								x_cur = TARGET_X_MIN;
+			//					y_cur = TARGET_Y_MIN;
+			//					x_cur = TARGET_X_MIN;
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1251,8 +1280,8 @@ void ustawOkret(int wielkoscOkretu) {
 								zmienStan(x_cur, y_cur + 2, STATEK);
 								zmienStan(x_cur, y_cur + 3, STATEK);
 								odswiezLewaPlansze();
-								y_cur = TARGET_Y_MIN;
-								x_cur = TARGET_X_MIN;
+			//					y_cur = TARGET_Y_MIN;
+			//					x_cur = TARGET_X_MIN;
 								move(y_cur, x_cur);
 								hasToBreak = 1;
 								break;
@@ -1317,8 +1346,8 @@ void gra() {
 		mvprintw(11,17, "                   WYGRANA                   ");
 		mvprintw(12,17, "                                             ");
 		mvprintw(13,17, "                                             ");
-		mvprintw(14,17, "                                             ");
-		mvprintw(15,17, "                                             ");
+		mvprintw(14,17, "           Przebieg partii zapisano          ");
+		mvprintw(15,17, "           do pliku \"statki.html\".           ");
 		mvprintw(16,17, "                                             ");
 		curs_set(0);
 	} else {
@@ -1329,8 +1358,8 @@ void gra() {
 		mvprintw(11,17, "                  PRZEGRANA                  ");
 		mvprintw(12,17, "                                             ");
 		mvprintw(13,17, "                                             ");
-		mvprintw(14,17, "                                             ");
-		mvprintw(15,17, "                                             ");
+		mvprintw(14,17, "           Przebieg partii zapisano          ");
+		mvprintw(15,17, "           do pliku \"statki.html\".           ");
 		mvprintw(16,17, "                                             ");
 		curs_set(0);
 	}
@@ -1392,11 +1421,15 @@ void turaGracza() {
 				mvprintw(y_cur, x_cur, "~");						//zaznaczanie woda niedozwolona
 				attroff(COLOR_PAIR(WODA));
 				break;
-			case 'm':
+			case '1':
 				zwyciestwo = 1;
 				break;
-			case 'n':
+			case '2':
 				zwyciestwo = -1;
+				break;
+			case '3':
+				zapisDoPliku();
+				endwin();
 				break;
 		}
 		
@@ -1440,6 +1473,17 @@ int strzalGracza(int x_curs, int y_curs) {
 		kratkiOkretowAI--;
 		mvprintw(2,42,"Pozostalo %d pol okretow.  ", kratkiOkretowAI);
 		if (kratkiOkretowAI < 1) {
+			int iter_y, iter_x;
+			for ( iter_y = 0; iter_y < 10; iter_y++ ) {
+				for ( iter_x = 0; iter_x < 10; iter_x++ ) {
+					planszaGracza[tura][iter_x][iter_y] = planszaGracza[tura-1][iter_x][iter_y];
+					if (tura != 100) planszaAI[tura+1][iter_x][iter_y] = planszaAI[tura][iter_x][iter_y];
+				}	
+			}
+			attron(A_REVERSE);
+			mvprintw(1,0, "Tura %d", tura);
+			attroff(A_REVERSE);
+			tura++;
 			zwyciestwo = 1;
 		}
 		return 1;
@@ -1461,12 +1505,45 @@ int strzalGracza(int x_curs, int y_curs) {
 }
 
 int strzalAI() {
-	int x_traf, y_traf, iter_x, iter_y;
+	int x_traf, y_traf, iter_x, iter_y, kierunek;
     
     x_traf = rand()%10;
     y_traf = rand()%10;
 
+    //zmienia cel na obok jezeli ostatnio trafil i ma poziom 3 +
 
+    if ( trafienieAI[2] == 1 && level >= 3) {
+    	do {
+    		kierunek = rand()%4;
+	    	switch (kierunek) {
+	    		case 0:
+					x_traf = trafienieAI[0]+1;
+			    	y_traf = trafienieAI[1];
+	    			break;
+	    		case 1:
+	    			x_traf = trafienieAI[0]-1;
+			    	y_traf = trafienieAI[1];
+		    		break;
+	    		case 2:
+	    			x_traf = trafienieAI[0];
+			    	y_traf = trafienieAI[1]+1;
+	    			break;
+	    		default:
+	    			x_traf = trafienieAI[0];
+			    	y_traf = trafienieAI[1]-1;
+	    			break;
+	    	}
+    	} while (x_traf < 0 || x_traf >= 10 || y_traf < 0 || y_traf >= 10);
+
+    	trafienieAI[2] = 0;
+
+    }
+
+    //POZIOM 2 + NIE STRZELA W TE POLA
+
+	if ( planszaGracza[0][x_traf][y_traf].czyAIlvl2tuStrzela == nieStrzelaTu && level >= 2) {
+			return 0;
+	}
 //PUDLO
 
 	if (planszaGracza[0][x_traf][y_traf].obiekt == woda ) {
@@ -1476,15 +1553,18 @@ int strzalAI() {
 
 //ZAPIS DO KOLEJNYCH TUR
 
-		if (tura !=1) {
-			for ( iter_y = 0; iter_y < 10; iter_y++ ) {
-				for ( iter_x = 0; iter_x < 10; iter_x++ ) {
-					planszaGracza[tura][iter_x][iter_y] = planszaGracza[tura-1][iter_x][iter_y];
-					planszaAI[tura][iter_x][iter_y] = planszaAI[tura-1][iter_x][iter_y];
-				}	
-			}
+		
+		for ( iter_y = 0; iter_y < 10; iter_y++ ) {
+			for ( iter_x = 0; iter_x < 10; iter_x++ ) {
+				if (tura !=1) planszaGracza[tura][iter_x][iter_y] = planszaGracza[tura-1][iter_x][iter_y];
+				if (tura != 100) planszaAI[tura+1][iter_x][iter_y] = planszaAI[tura][iter_x][iter_y];
+			}	
 		}
+		
 		planszaGracza[tura][x_traf][y_traf] = planszaGracza[0][x_traf][y_traf];
+		attron(A_REVERSE);
+		mvprintw(1,0, "Tura %d", tura);
+		attroff(A_REVERSE);
 		tura++;
 
 
@@ -1498,6 +1578,53 @@ int strzalAI() {
 //TRAFIONY
 	else if (planszaGracza[0][x_traf][y_traf].obiekt == statek ) {
 		planszaGracza[0][x_traf][y_traf].obiekt = trafiony;
+
+
+			//zmiana pol na rogach, zeby ai wyzszego poziomu nie strzelal w nie 
+
+		if ( x_traf-1 >= 0 && x_traf-1 < 10 && y_traf-1 >= 0 && y_traf-1 < 10) {
+			planszaGracza[0][x_traf-1][y_traf-1].czyAIlvl2tuStrzela = nieStrzelaTu;
+
+
+//tymczasowo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
+
+//			planszaGracza[0][x_traf-1][y_traf-1].obiekt = ZATOPIONY;
+//			odswiezPole(((x_traf-1) *2)+TARGET_X_MIN, y_traf-1+ TARGET_Y_MIN);
+
+
+
+		}
+		if ( x_traf+1 >= 0 && x_traf+1 < 10 && y_traf-1 >= 0 && y_traf-1 < 10) {
+			planszaGracza[0][x_traf+1][y_traf-1].czyAIlvl2tuStrzela = nieStrzelaTu;
+
+// planszaGracza[0][x_traf+1][y_traf-1].obiekt = ZATOPIONY;
+			// odswiezPole(((x_traf+1) *2)+TARGET_X_MIN, y_traf-1+ TARGET_Y_MIN);
+
+		}
+		if ( x_traf+1 >= 0 && x_traf+1 < 10 && y_traf+1 >= 0 && y_traf+1 < 10) {
+			planszaGracza[0][x_traf+1][y_traf+1].czyAIlvl2tuStrzela = nieStrzelaTu;
+
+
+// planszaGracza[0][x_traf+1][y_traf+1].obiekt = ZATOPIONY;
+			// odswiezPole(((x_traf+1) *2)+TARGET_X_MIN, y_traf+1+ TARGET_Y_MIN);
+
+
+		}
+		if ( x_traf-1 >= 0 && x_traf-1 < 10 && y_traf+1 >= 0 && y_traf+1 < 10) {
+			planszaGracza[0][x_traf-1][y_traf+1].czyAIlvl2tuStrzela = nieStrzelaTu;
+
+
+// planszaGracza[0][x_traf-1][y_traf+1].obiekt = ZATOPIONY;
+			// odswiezPole(((x_traf-1) *2)+TARGET_X_MIN, y_traf+1+ TARGET_Y_MIN);
+
+
+
+		}
+		trafienieAI[0] = x_traf;
+		trafienieAI[1] = y_traf;
+		trafienieAI[2] = 1;
+
+
 		--kratkiOkretowGracza;
 		odswiezPole((x_traf*2)+17, y_traf+7);
 		mvprintw(2,13,"Pozostalo %d pol okretow. ", kratkiOkretowGracza);
@@ -1508,15 +1635,18 @@ int strzalAI() {
 
 //ZAPIS DO KOLEJNYCH TUR
 
-		if (tura !=1) {
-			for ( iter_y = 0; iter_y < 10; iter_y++ ) {
-				for ( iter_x = 0; iter_x < 10; iter_x++ ) {
-					planszaGracza[tura][iter_x][iter_y] = planszaGracza[tura-1][iter_x][iter_y];
-					planszaAI[tura][iter_x][iter_y] = planszaAI[tura-1][iter_x][iter_y];
-				}
+		
+		for ( iter_y = 0; iter_y < 10; iter_y++ ) {
+			for ( iter_x = 0; iter_x < 10; iter_x++ ) {
+				if (tura !=1) planszaGracza[tura][iter_x][iter_y] = planszaGracza[tura-1][iter_x][iter_y];
+				if (tura != 100) planszaAI[tura+1][iter_x][iter_y] = planszaAI[tura][iter_x][iter_y];
 			}
 		}
+	
 		planszaGracza[tura][x_traf][y_traf] = planszaGracza[0][x_traf][y_traf];
+		attron(A_REVERSE);
+		mvprintw(1,0, "Tura %d", tura);
+		attroff(A_REVERSE);
 		tura++;
 
 
@@ -1524,6 +1654,9 @@ int strzalAI() {
 
 		move(y_cur, x_cur);
 		refresh();
+		if (zwyciestwo == -1) {
+			return 1;
+		}
 		return 0;
 	}
 	else if (planszaGracza[0][x_traf][y_traf].obiekt == trafiony ) {
@@ -1562,9 +1695,9 @@ void ustawOkretyAI() {
 
 void ustawOkretAI(int wielkoscOkretu) {
 	
-//	int i;
+	//	int i;
 	int x, y;
-	int obrot;
+	
 	int czyStatekOK;
 	czyStatekOK = 0;
 	switch (wielkoscOkretu) {
@@ -1777,7 +1910,7 @@ void zapisDoPliku() {
 
 //zapis topu
 
-   fprintf(plik, "<body>\n\t<h1>Okręty</h1>\n\t<h3>Przebieg rozgrywki</h3>\n\n");
+   fprintf(plik, "<body>\n\t<h1>Okręty</h1>\n\t<h3>Przebieg rozgrywki na poziomie %d</h3>\n\n", level);
 
 //zapis podgladu
 
@@ -1792,6 +1925,8 @@ void zapisDoPliku() {
       fprintf(plik,"\t\t\t\t<tr>\n\t\t\t\t\t<th class=\"liczby\">%d</th>\n", y+1);
       for (x = 0; x < 10; ++x) {
          s = stanPola(planszaAI[0][x][y].obiekt);
+         if (planszaAI[0][x][y].obiekt == TRAFIONY) s = "statek";
+         if (planszaAI[0][x][y].obiekt == PUDLO) s = "woda";
          fprintf(plik, "\t\t\t\t\t<td class=\"tooltip %s\"><span class=\"tooltiptext\">%s</span></td>\n", s, s);
       }
       fprintf(plik,"\t\t\t\t</tr>\n");
@@ -1805,6 +1940,8 @@ void zapisDoPliku() {
       fprintf(plik,"\t\t\t\t<tr>\n\t\t\t\t\t<th class=\"liczby\">%d</th>\n", y+1);
       for (x = 0; x < 10; ++x) {
          s = stanPola(planszaGracza[0][x][y].obiekt);
+         if (planszaGracza[0][x][y].obiekt == TRAFIONY) s = "statek";
+         if (planszaGracza[0][x][y].obiekt == PUDLO) s = "woda";
          fprintf(plik, "\t\t\t\t\t<td class=\"tooltip %s\"><span class=\"tooltiptext\">%s</span></td>\n", s, s);
       }
       fprintf(plik,"\t\t\t\t</tr>\n");
@@ -1863,4 +2000,99 @@ void zapisDoPliku() {
    fclose(plik);
 
 //   return 0;
+}
+
+void wyborPoziomu() {
+	curs_set(0);
+	int key;
+	mvprintw(10, 26, "Wybierz poziom trudnosci:");
+	mvprintw(12, 26, "  bardzo latwy           ");
+	mvprintw(13, 26, "  z pewna doza trudnosci ");
+	mvprintw(14, 26, "  trudnosc++             ");
+	
+
+	while ( (key = getch() ) !=' ') {
+
+		switch( level ) {
+			case 1:
+				switch ( key ) {
+					case KEY_UP:
+						mvprintw(12, 26, "  bardzo latwy           ");
+						
+						mvprintw(13, 26, "  z pewna doza trudnosci ");
+						attron(A_REVERSE);
+						mvprintw(14, 26, "  trudnosc++             ");
+						attroff(A_REVERSE);
+
+						level = 3;
+						break;
+					case KEY_DOWN:
+						mvprintw(12, 26, "  bardzo latwy           ");
+						attron(A_REVERSE);
+						mvprintw(13, 26, "  z pewna doza trudnosci ");
+						attroff(A_REVERSE);
+						mvprintw(14, 26, "  trudnosc++             ");
+						level = 2;
+						break;
+				}
+				break;
+			case 2:
+				switch ( key ) {
+					case KEY_UP:
+						attron(A_REVERSE);
+						mvprintw(12, 26, "  bardzo latwy           ");
+						attroff(A_REVERSE);
+						mvprintw(13, 26, "  z pewna doza trudnosci ");
+						
+						mvprintw(14, 26, "  trudnosc++             ");
+						
+
+						level = 1;
+						break;
+					case KEY_DOWN:
+						mvprintw(12, 26, "  bardzo latwy           ");
+						
+						mvprintw(13, 26, "  z pewna doza trudnosci ");
+						attron(A_REVERSE);
+						mvprintw(14, 26, "  trudnosc++             ");
+						attroff(A_REVERSE);
+						level = 3;
+						break;
+				}
+				break;
+			case 3:
+				switch ( key ) {
+					case KEY_UP:
+						mvprintw(12, 26, "  bardzo latwy           ");
+						attron(A_REVERSE);
+						mvprintw(13, 26, "  z pewna doza trudnosci ");
+						attroff(A_REVERSE);
+						mvprintw(14, 26, "  trudnosc++             ");
+						
+
+						level = 2;
+						break;
+					case KEY_DOWN:
+						attron(A_REVERSE);
+						mvprintw(12, 26, "  bardzo latwy           ");
+						attroff(A_REVERSE);
+						mvprintw(13, 26, "  z pewna doza trudnosci ");
+						
+						mvprintw(14, 26, "  trudnosc++             ");
+						level = 1;
+						break;
+				}
+				break;
+
+		}
+		key = 0;
+	}
+	attron(A_REVERSE);
+	mvprintw(0,0, "Poziom %d",level);
+	attroff(A_REVERSE);
+	mvprintw(10, 26, "                         ");
+	mvprintw(12, 26, "                         ");
+	mvprintw(13, 26, "                         ");
+	mvprintw(14, 26, "                         ");
+	curs_set(1);
 }
